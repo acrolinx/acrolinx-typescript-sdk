@@ -5,7 +5,7 @@
 import * as core from "../../../../core";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
-import * as Starter from "../../../index";
+import * as acrolinx from "../../../index";
 
 export declare namespace StyleGuides {
     export interface Options {
@@ -36,7 +36,13 @@ export class StyleGuides {
      * @example
      *     await client.styleGuides.getStyleGuides()
      */
-    public async getStyleGuides(requestOptions?: StyleGuides.RequestOptions): Promise<unknown> {
+    public getStyleGuides(requestOptions?: StyleGuides.RequestOptions): core.HttpResponsePromise<unknown> {
+        return core.HttpResponsePromise.fromPromise(this.__getStyleGuides(requestOptions));
+    }
+
+    private async __getStyleGuides(
+        requestOptions?: StyleGuides.RequestOptions,
+    ): Promise<core.WithRawResponse<unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -46,9 +52,9 @@ export class StyleGuides {
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -60,27 +66,30 @@ export class StyleGuides {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body;
+            return { data: _response.body, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
-            throw new errors.StarterError({
+            throw new errors.acrolinxError({
                 statusCode: _response.error.statusCode,
                 body: _response.error.body,
+                rawResponse: _response.rawResponse,
             });
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError("Timeout exceeded when calling GET /v1/style-guides.");
+                throw new errors.acrolinxTimeoutError("Timeout exceeded when calling GET /v1/style-guides.");
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -91,7 +100,13 @@ export class StyleGuides {
      * @example
      *     await client.styleGuides.createStyleGuide()
      */
-    public async createStyleGuide(requestOptions?: StyleGuides.RequestOptions): Promise<unknown> {
+    public createStyleGuide(requestOptions?: StyleGuides.RequestOptions): core.HttpResponsePromise<unknown> {
+        return core.HttpResponsePromise.fromPromise(this.__createStyleGuide(requestOptions));
+    }
+
+    private async __createStyleGuide(
+        requestOptions?: StyleGuides.RequestOptions,
+    ): Promise<core.WithRawResponse<unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -101,9 +116,9 @@ export class StyleGuides {
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -115,27 +130,30 @@ export class StyleGuides {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body;
+            return { data: _response.body, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
-            throw new errors.StarterError({
+            throw new errors.acrolinxError({
                 statusCode: _response.error.statusCode,
                 body: _response.error.body,
+                rawResponse: _response.rawResponse,
             });
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError("Timeout exceeded when calling POST /v1/style-guides.");
+                throw new errors.acrolinxTimeoutError("Timeout exceeded when calling POST /v1/style-guides.");
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -144,12 +162,22 @@ export class StyleGuides {
      * @param {string} styleGuideId
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link Starter.UnprocessableEntityError}
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleGuides.getStyleGuide("style_guide_id")
      */
-    public async getStyleGuide(styleGuideId: string, requestOptions?: StyleGuides.RequestOptions): Promise<unknown> {
+    public getStyleGuide(
+        styleGuideId: string,
+        requestOptions?: StyleGuides.RequestOptions,
+    ): core.HttpResponsePromise<unknown> {
+        return core.HttpResponsePromise.fromPromise(this.__getStyleGuide(styleGuideId, requestOptions));
+    }
+
+    private async __getStyleGuide(
+        styleGuideId: string,
+        requestOptions?: StyleGuides.RequestOptions,
+    ): Promise<core.WithRawResponse<unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -159,9 +187,9 @@ export class StyleGuides {
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -173,34 +201,40 @@ export class StyleGuides {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body;
+            return { data: _response.body, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new Starter.UnprocessableEntityError(_response.error.body as Starter.HttpValidationError);
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
                 default:
-                    throw new errors.StarterError({
+                    throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError(
+                throw new errors.acrolinxTimeoutError(
                     "Timeout exceeded when calling GET /v1/style-guides/{style_guide_id}.",
                 );
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -209,12 +243,22 @@ export class StyleGuides {
      * @param {string} styleGuideId
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link Starter.UnprocessableEntityError}
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleGuides.updateStyleGuide("style_guide_id")
      */
-    public async updateStyleGuide(styleGuideId: string, requestOptions?: StyleGuides.RequestOptions): Promise<unknown> {
+    public updateStyleGuide(
+        styleGuideId: string,
+        requestOptions?: StyleGuides.RequestOptions,
+    ): core.HttpResponsePromise<unknown> {
+        return core.HttpResponsePromise.fromPromise(this.__updateStyleGuide(styleGuideId, requestOptions));
+    }
+
+    private async __updateStyleGuide(
+        styleGuideId: string,
+        requestOptions?: StyleGuides.RequestOptions,
+    ): Promise<core.WithRawResponse<unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -224,9 +268,9 @@ export class StyleGuides {
             method: "PUT",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -238,34 +282,40 @@ export class StyleGuides {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body;
+            return { data: _response.body, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new Starter.UnprocessableEntityError(_response.error.body as Starter.HttpValidationError);
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
                 default:
-                    throw new errors.StarterError({
+                    throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError(
+                throw new errors.acrolinxTimeoutError(
                     "Timeout exceeded when calling PUT /v1/style-guides/{style_guide_id}.",
                 );
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -274,12 +324,22 @@ export class StyleGuides {
      * @param {string} styleGuideId
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link Starter.UnprocessableEntityError}
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleGuides.deleteStyleGuide("style_guide_id")
      */
-    public async deleteStyleGuide(styleGuideId: string, requestOptions?: StyleGuides.RequestOptions): Promise<unknown> {
+    public deleteStyleGuide(
+        styleGuideId: string,
+        requestOptions?: StyleGuides.RequestOptions,
+    ): core.HttpResponsePromise<unknown> {
+        return core.HttpResponsePromise.fromPromise(this.__deleteStyleGuide(styleGuideId, requestOptions));
+    }
+
+    private async __deleteStyleGuide(
+        styleGuideId: string,
+        requestOptions?: StyleGuides.RequestOptions,
+    ): Promise<core.WithRawResponse<unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -289,9 +349,9 @@ export class StyleGuides {
             method: "DELETE",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -303,34 +363,40 @@ export class StyleGuides {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body;
+            return { data: _response.body, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new Starter.UnprocessableEntityError(_response.error.body as Starter.HttpValidationError);
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
                 default:
-                    throw new errors.StarterError({
+                    throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError(
+                throw new errors.acrolinxTimeoutError(
                     "Timeout exceeded when calling DELETE /v1/style-guides/{style_guide_id}.",
                 );
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }

@@ -259,7 +259,7 @@ await client.styleChecks.createStyleCheck({
 <dl>
 <dd>
 
-**request:** `Starter.CreateStyleCheckV1StyleChecksPostRequest`
+**request:** `acrolinx.CreateStyleCheckV1StyleChecksPostRequest`
 
 </dd>
 </dl>
@@ -278,7 +278,7 @@ await client.styleChecks.createStyleCheck({
 </dl>
 </details>
 
-<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">getStyleCheck</a>(workflowId, { ...params }) -> Starter.StyleCheckResponse</code></summary>
+<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">getStyleCheck</a>(workflowId, { ...params }) -> acrolinx.StyleCheckResponse</code></summary>
 <dl>
 <dd>
 
@@ -317,7 +317,7 @@ await client.styleChecks.getStyleCheck("workflow_id", {
 <dl>
 <dd>
 
-**request:** `Starter.GetStyleCheckV1StyleChecksWorkflowIdGetRequest`
+**request:** `acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest`
 
 </dd>
 </dl>
@@ -369,7 +369,7 @@ await client.styleSuggestions.createStyleSuggestion({
 <dl>
 <dd>
 
-**request:** `Starter.CreateStyleSuggestionV1StyleSuggestionsPostRequest`
+**request:** `acrolinx.CreateStyleSuggestionV1StyleSuggestionsPostRequest`
 
 </dd>
 </dl>
@@ -388,7 +388,7 @@ await client.styleSuggestions.createStyleSuggestion({
 </dl>
 </details>
 
-<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">getStyleSuggestion</a>(workflowId, { ...params }) -> Starter.SuggestionResponse</code></summary>
+<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">getStyleSuggestion</a>(workflowId, { ...params }) -> acrolinx.SuggestionResponse</code></summary>
 <dl>
 <dd>
 
@@ -427,7 +427,7 @@ await client.styleSuggestions.getStyleSuggestion("workflow_id", {
 <dl>
 <dd>
 
-**request:** `Starter.GetStyleSuggestionV1StyleSuggestionsWorkflowIdGetRequest`
+**request:** `acrolinx.GetStyleSuggestionV1StyleSuggestionsWorkflowIdGetRequest`
 
 </dd>
 </dl>
@@ -479,7 +479,7 @@ await client.styleRewrites.createStyleRewrite({
 <dl>
 <dd>
 
-**request:** `Starter.CreateStyleRewriteV1StyleRewritesPostRequest`
+**request:** `acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest`
 
 </dd>
 </dl>
@@ -498,7 +498,7 @@ await client.styleRewrites.createStyleRewrite({
 </dl>
 </details>
 
-<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId, { ...params }) -> Starter.RewriteResponse</code></summary>
+<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId, { ...params }) -> acrolinx.RewriteResponse</code></summary>
 <dl>
 <dd>
 
@@ -537,7 +537,7 @@ await client.styleRewrites.getStyleRewrite("workflow_id", {
 <dl>
 <dd>
 
-**request:** `Starter.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest`
+**request:** `acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest`
 
 </dd>
 </dl>

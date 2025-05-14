@@ -1,3 +1,3 @@
-export * as Starter from "./api";
-export { StarterClient } from "./Client";
-export { StarterError, StarterTimeoutError } from "./errors";
+export * as acrolinx from "./api";
+export { acrolinxClient } from "./Client";
+export { acrolinxError, acrolinxTimeoutError } from "./errors";

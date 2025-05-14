@@ -3,14 +3,16 @@
  */
 
 import * as errors from "../../errors/index";
-import * as Starter from "../index";
+import * as acrolinx from "../index";
+import * as core from "../../core";
 
-export class UnprocessableEntityError extends errors.StarterError {
-    constructor(body: Starter.HttpValidationError) {
+export class UnprocessableEntityError extends errors.acrolinxError {
+    constructor(body: acrolinx.HttpValidationError, rawResponse?: core.RawResponse) {
         super({
             message: "UnprocessableEntityError",
             statusCode: 422,
             body: body,
+            rawResponse: rawResponse,
         });
         Object.setPrototypeOf(this, UnprocessableEntityError.prototype);
     }

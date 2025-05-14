@@ -1,14 +1,14 @@
 # Acrolinx576596 TypeScript Library
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fcdonel707%2Facrolinx-typescript-sdk)
-[![npm shield](https://img.shields.io/npm/v/startersdk)](https://www.npmjs.com/package/startersdk)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Ffern-demo%2Facrolinx-typescript-sdk)
+[![npm shield](https://img.shields.io/npm/v/acrolinx)](https://www.npmjs.com/package/acrolinx)
 
 The Acrolinx576596 TypeScript library provides convenient access to the Acrolinx576596 API from TypeScript.
 
 ## Installation
 
 ```sh
-npm i -s startersdk
+npm i -s acrolinx
 ```
 
 ## Reference
@@ -20,9 +20,9 @@ A full reference for this library is available [here](./reference.md).
 Instantiate and use the client with the following:
 
 ```typescript
-import { StarterClient } from "startersdk";
+import { acrolinxClient } from "acrolinx";
 
-const client = new StarterClient({ environment: "YOUR_BASE_URL" });
+const client = new acrolinxClient({ environment: "YOUR_BASE_URL" });
 await client.styleGuides.createStyleGuide();
 ```
 
@@ -32,9 +32,9 @@ The SDK exports all request and response types as TypeScript interfaces. Simply 
 following namespace:
 
 ```typescript
-import { Starter } from "startersdk";
+import { acrolinx } from "acrolinx";
 
-const request: Starter.CreateStyleCheckV1StyleChecksPostRequest = {
+const request: acrolinx.CreateStyleCheckV1StyleChecksPostRequest = {
     ...
 };
 ```
@@ -45,15 +45,16 @@ When the API returns a non-success status code (4xx or 5xx response), a subclass
 will be thrown.
 
 ```typescript
-import { StarterError } from "startersdk";
+import { acrolinxError } from "acrolinx";
 
 try {
     await client.styleGuides.createStyleGuide(...);
 } catch (err) {
-    if (err instanceof StarterError) {
+    if (err instanceof acrolinxError) {
         console.log(err.statusCode);
         console.log(err.message);
         console.log(err.body);
+        console.log(err.rawResponse);
     }
 }
 ```
@@ -75,10 +76,10 @@ const response = await client.styleGuides.createStyleGuide(..., {
 ### Retries
 
 The SDK is instrumented with automatic retries with exponential backoff. A request will be retried as long
-as the request is deemed retriable and the number of retry attempts has not grown larger than the configured
+as the request is deemed retryable and the number of retry attempts has not grown larger than the configured
 retry limit (default: 2).
 
-A request is deemed retriable when any of the following HTTP status codes is returned:
+A request is deemed retryable when any of the following HTTP status codes is returned:
 
 - [408](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408) (Timeout)
 - [429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429) (Too Many Requests)
@@ -114,6 +115,18 @@ const response = await client.styleGuides.createStyleGuide(..., {
 controller.abort(); // aborts the request
 ```
 
+### Access Raw Response Data
+
+The SDK provides access to raw response data, including headers, through the `.withRawResponse()` method.
+The `.withRawResponse()` method returns a promise that results to an object with a `data` and a `rawResponse` property.
+
+```typescript
+const { data, rawResponse } = await client.styleGuides.createStyleGuide(...).withRawResponse();
+
+console.log(data);
+console.log(rawResponse.headers['X-My-Header']);
+```
+
 ### Runtime Compatibility
 
 The SDK defaults to `node-fetch` but will use the global fetch client if present. The SDK works in the following
@@ -128,13 +141,13 @@ runtimes:
 
 ### Customizing Fetch Client
 
-The SDK provides a way for your to customize the underlying HTTP client / Fetch function. If you're running in an
+The SDK provides a way for you to customize the underlying HTTP client / Fetch function. If you're running in an
 unsupported environment, this provides a way for you to break glass and ensure the SDK works.
 
 ```typescript
-import { StarterClient } from "startersdk";
+import { acrolinxClient } from "acrolinx";
 
-const client = new StarterClient({
+const client = new acrolinxClient({
     ...
     fetcher: // provide your implementation here
 });

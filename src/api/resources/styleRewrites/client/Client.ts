@@ -3,7 +3,7 @@
  */
 
 import * as core from "../../../../core";
-import * as Starter from "../../../index";
+import * as acrolinx from "../../../index";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
@@ -31,20 +31,27 @@ export class StyleRewrites {
     constructor(protected readonly _options: StyleRewrites.Options) {}
 
     /**
-     * @param {Starter.CreateStyleRewriteV1StyleRewritesPostRequest} request
+     * @param {acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest} request
      * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link Starter.UnprocessableEntityError}
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleRewrites.createStyleRewrite({
      *         document_id: "document_id"
      *     })
      */
-    public async createStyleRewrite(
-        request: Starter.CreateStyleRewriteV1StyleRewritesPostRequest,
+    public createStyleRewrite(
+        request: acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): Promise<unknown> {
+    ): core.HttpResponsePromise<unknown> {
+        return core.HttpResponsePromise.fromPromise(this.__createStyleRewrite(request, requestOptions));
+    }
+
+    private async __createStyleRewrite(
+        request: acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest,
+        requestOptions?: StyleRewrites.RequestOptions,
+    ): Promise<core.WithRawResponse<unknown>> {
         const { document_id: documentId } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["document_id"] = documentId;
@@ -57,9 +64,9 @@ export class StyleRewrites {
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -72,53 +79,67 @@ export class StyleRewrites {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body;
+            return { data: _response.body, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new Starter.UnprocessableEntityError(_response.error.body as Starter.HttpValidationError);
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
                 default:
-                    throw new errors.StarterError({
+                    throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError("Timeout exceeded when calling POST /v1/style/rewrites.");
+                throw new errors.acrolinxTimeoutError("Timeout exceeded when calling POST /v1/style/rewrites.");
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
 
     /**
      * @param {string} workflowId
-     * @param {Starter.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest} request
+     * @param {acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest} request
      * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link Starter.UnprocessableEntityError}
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleRewrites.getStyleRewrite("workflow_id", {
      *         document_id: "document_id"
      *     })
      */
-    public async getStyleRewrite(
+    public getStyleRewrite(
         workflowId: string,
-        request: Starter.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest,
+        request: acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): Promise<Starter.RewriteResponse> {
+    ): core.HttpResponsePromise<acrolinx.RewriteResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__getStyleRewrite(workflowId, request, requestOptions));
+    }
+
+    private async __getStyleRewrite(
+        workflowId: string,
+        request: acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest,
+        requestOptions?: StyleRewrites.RequestOptions,
+    ): Promise<core.WithRawResponse<acrolinx.RewriteResponse>> {
         const { document_id: documentId } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["document_id"] = documentId;
@@ -131,9 +152,9 @@ export class StyleRewrites {
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -146,34 +167,40 @@ export class StyleRewrites {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body as Starter.RewriteResponse;
+            return { data: _response.body as acrolinx.RewriteResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new Starter.UnprocessableEntityError(_response.error.body as Starter.HttpValidationError);
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
                 default:
-                    throw new errors.StarterError({
+                    throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError(
+                throw new errors.acrolinxTimeoutError(
                     "Timeout exceeded when calling GET /v1/style/rewrites/{workflow_id}.",
                 );
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }

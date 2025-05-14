@@ -3,7 +3,7 @@
  */
 
 import * as core from "../../../../core";
-import * as Starter from "../../../index";
+import * as acrolinx from "../../../index";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
@@ -31,20 +31,27 @@ export class StyleChecks {
     constructor(protected readonly _options: StyleChecks.Options) {}
 
     /**
-     * @param {Starter.CreateStyleCheckV1StyleChecksPostRequest} request
+     * @param {acrolinx.CreateStyleCheckV1StyleChecksPostRequest} request
      * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link Starter.UnprocessableEntityError}
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleChecks.createStyleCheck({
      *         document_id: "document_id"
      *     })
      */
-    public async createStyleCheck(
-        request: Starter.CreateStyleCheckV1StyleChecksPostRequest,
+    public createStyleCheck(
+        request: acrolinx.CreateStyleCheckV1StyleChecksPostRequest,
         requestOptions?: StyleChecks.RequestOptions,
-    ): Promise<unknown> {
+    ): core.HttpResponsePromise<unknown> {
+        return core.HttpResponsePromise.fromPromise(this.__createStyleCheck(request, requestOptions));
+    }
+
+    private async __createStyleCheck(
+        request: acrolinx.CreateStyleCheckV1StyleChecksPostRequest,
+        requestOptions?: StyleChecks.RequestOptions,
+    ): Promise<core.WithRawResponse<unknown>> {
         const { document_id: documentId } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["document_id"] = documentId;
@@ -57,9 +64,9 @@ export class StyleChecks {
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -72,53 +79,67 @@ export class StyleChecks {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body;
+            return { data: _response.body, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new Starter.UnprocessableEntityError(_response.error.body as Starter.HttpValidationError);
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
                 default:
-                    throw new errors.StarterError({
+                    throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError("Timeout exceeded when calling POST /v1/style/checks.");
+                throw new errors.acrolinxTimeoutError("Timeout exceeded when calling POST /v1/style/checks.");
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
 
     /**
      * @param {string} workflowId
-     * @param {Starter.GetStyleCheckV1StyleChecksWorkflowIdGetRequest} request
+     * @param {acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest} request
      * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link Starter.UnprocessableEntityError}
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleChecks.getStyleCheck("workflow_id", {
      *         document_id: "document_id"
      *     })
      */
-    public async getStyleCheck(
+    public getStyleCheck(
         workflowId: string,
-        request: Starter.GetStyleCheckV1StyleChecksWorkflowIdGetRequest,
+        request: acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest,
         requestOptions?: StyleChecks.RequestOptions,
-    ): Promise<Starter.StyleCheckResponse> {
+    ): core.HttpResponsePromise<acrolinx.StyleCheckResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__getStyleCheck(workflowId, request, requestOptions));
+    }
+
+    private async __getStyleCheck(
+        workflowId: string,
+        request: acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest,
+        requestOptions?: StyleChecks.RequestOptions,
+    ): Promise<core.WithRawResponse<acrolinx.StyleCheckResponse>> {
         const { document_id: documentId } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["document_id"] = documentId;
@@ -131,9 +152,9 @@ export class StyleChecks {
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "startersdk",
+                "X-Fern-SDK-Name": "acrolinx",
                 "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "startersdk/0.0.1",
+                "User-Agent": "acrolinx/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -146,34 +167,40 @@ export class StyleChecks {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return _response.body as Starter.StyleCheckResponse;
+            return { data: _response.body as acrolinx.StyleCheckResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new Starter.UnprocessableEntityError(_response.error.body as Starter.HttpValidationError);
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
                 default:
-                    throw new errors.StarterError({
+                    throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
 
         switch (_response.error.reason) {
             case "non-json":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.StarterTimeoutError(
+                throw new errors.acrolinxTimeoutError(
                     "Timeout exceeded when calling GET /v1/style/checks/{workflow_id}.",
                 );
             case "unknown":
-                throw new errors.StarterError({
+                throw new errors.acrolinxError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }

@@ -1,8 +1,8 @@
 {
-    "name": "startersdk",
+    "name": "acrolinx",
     "version": "0.0.1",
     "private": false,
-    "repository": "https://github.com/cdonel707/acrolinx-typescript-sdk",
+    "repository": "https://github.com/fern-demo/acrolinx-typescript-sdk",
     "main": "./index.js",
     "types": "./index.d.ts",
     "scripts": {
@@ -38,5 +38,6 @@
         "fs": false,
         "os": false,
         "path": false
-    }
+    },
+    "packageManager": "yarn@1.22.22"
 }

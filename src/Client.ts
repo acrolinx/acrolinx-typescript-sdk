@@ -8,7 +8,7 @@ import { StyleChecks } from "./api/resources/styleChecks/client/Client";
 import { StyleSuggestions } from "./api/resources/styleSuggestions/client/Client";
 import { StyleRewrites } from "./api/resources/styleRewrites/client/Client";
 
-export declare namespace StarterClient {
+export declare namespace acrolinxClient {
     export interface Options {
         environment: core.Supplier<string>;
         /** Specify a custom URL to connect the client to. */
@@ -28,13 +28,13 @@ export declare namespace StarterClient {
     }
 }
 
-export class StarterClient {
+export class acrolinxClient {
     protected _styleGuides: StyleGuides | undefined;
     protected _styleChecks: StyleChecks | undefined;
     protected _styleSuggestions: StyleSuggestions | undefined;
     protected _styleRewrites: StyleRewrites | undefined;
 
-    constructor(protected readonly _options: StarterClient.Options) {}
+    constructor(protected readonly _options: acrolinxClient.Options) {}
 
     public get styleGuides(): StyleGuides {
         return (this._styleGuides ??= new StyleGuides(this._options));
