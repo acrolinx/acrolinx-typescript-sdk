@@ -22,7 +22,7 @@ Instantiate and use the client with the following:
 ```typescript
 import { acrolinxClient } from "acrolinx";
 
-const client = new acrolinxClient({ environment: "YOUR_BASE_URL" });
+const client = new acrolinxClient();
 await client.styleGuides.createStyleGuide();
 ```
 
