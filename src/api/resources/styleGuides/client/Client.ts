@@ -4,15 +4,19 @@
 
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
+import * as acrolinx from "../../../index";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
-import * as acrolinx from "../../../index";
+import * as fs from "fs";
+import { Blob } from "buffer";
 
 export declare namespace StyleGuides {
     export interface Options {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        /** Override the Authorization header */
+        apiKey: core.Supplier<string>;
         fetcher?: core.FetchFunction;
     }
 
@@ -23,60 +27,93 @@ export declare namespace StyleGuides {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Override the Authorization header */
+        apiKey?: string;
         /** Additional headers to include in the request. */
         headers?: Record<string, string>;
     }
 }
 
+/**
+ * Endpoints related to creating, updating, and organizing style guides for content consistency across teams.
+ */
 export class StyleGuides {
-    constructor(protected readonly _options: StyleGuides.Options = {}) {}
+    constructor(protected readonly _options: StyleGuides.Options) {}
 
     /**
+     * Get all style guides.
+     *
+     * @param {acrolinx.StyleGuidesGetStyleGuidesRequest} request
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
      *     await client.styleGuides.getStyleGuides()
      */
-    public getStyleGuides(requestOptions?: StyleGuides.RequestOptions): core.HttpResponsePromise<unknown> {
-        return core.HttpResponsePromise.fromPromise(this.__getStyleGuides(requestOptions));
+    public getStyleGuides(
+        request: acrolinx.StyleGuidesGetStyleGuidesRequest = {},
+        requestOptions?: StyleGuides.RequestOptions,
+    ): core.HttpResponsePromise<acrolinx.StyleGuideResponse[]> {
+        return core.HttpResponsePromise.fromPromise(this.__getStyleGuides(request, requestOptions));
     }
 
     private async __getStyleGuides(
+        request: acrolinx.StyleGuidesGetStyleGuidesRequest = {},
         requestOptions?: StyleGuides.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
+    ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse[]>> {
+        const { offset, limit } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (offset != null) {
+            _queryParams["offset"] = offset.toString();
+        }
+
+        if (limit != null) {
+            _queryParams["limit"] = limit.toString();
+        }
+
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 "v1/style-guides",
             ),
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
+            queryParameters: _queryParams,
             requestType: "json",
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
+            return { data: _response.body as acrolinx.StyleGuideResponse[], rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
-            throw new errors.acrolinxError({
-                statusCode: _response.error.statusCode,
-                body: _response.error.body,
-                rawResponse: _response.rawResponse,
-            });
+            switch (_response.error.statusCode) {
+                case 422:
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.acrolinxError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
         }
 
         switch (_response.error.reason) {
@@ -97,51 +134,78 @@ export class StyleGuides {
     }
 
     /**
+     * @param {File | fs.ReadStream | Blob} file_upload
+     * @param {acrolinx.StyleGuideRequestBody} request
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link acrolinx.UnprocessableEntityError}
+     *
      * @example
-     *     await client.styleGuides.createStyleGuide()
+     *     await client.styleGuides.createStyleGuide(fs.createReadStream("/path/to/your/file"), {})
      */
-    public createStyleGuide(requestOptions?: StyleGuides.RequestOptions): core.HttpResponsePromise<unknown> {
-        return core.HttpResponsePromise.fromPromise(this.__createStyleGuide(requestOptions));
+    public createStyleGuide(
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleGuideRequestBody,
+        requestOptions?: StyleGuides.RequestOptions,
+    ): core.HttpResponsePromise<acrolinx.StyleGuideResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createStyleGuide(file_upload, request, requestOptions));
     }
 
     private async __createStyleGuide(
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleGuideRequestBody,
         requestOptions?: StyleGuides.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
+    ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse>> {
+        const _request = await core.newFormData();
+        await _request.appendFile("file_upload", file_upload);
+        if (request.name != null) {
+            _request.append("name", request.name);
+        }
+
+        const _maybeEncodedRequest = await _request.getRequest();
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 "v1/style-guides",
             ),
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
+                ..._maybeEncodedRequest.headers,
                 ...requestOptions?.headers,
             },
-            contentType: "application/json",
-            requestType: "json",
+            requestType: "file",
+            duplex: _maybeEncodedRequest.duplex,
+            body: _maybeEncodedRequest.body,
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
+            return { data: _response.body as acrolinx.StyleGuideResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
-            throw new errors.acrolinxError({
-                statusCode: _response.error.statusCode,
-                body: _response.error.body,
-                rawResponse: _response.rawResponse,
-            });
+            switch (_response.error.statusCode) {
+                case 422:
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.acrolinxError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
         }
 
         switch (_response.error.reason) {
@@ -162,7 +226,7 @@ export class StyleGuides {
     }
 
     /**
-     * @param {string} styleGuideId
+     * @param {string} styleGuideId - The ID of the style guide.
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
@@ -173,29 +237,29 @@ export class StyleGuides {
     public getStyleGuide(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
-    ): core.HttpResponsePromise<unknown> {
+    ): core.HttpResponsePromise<acrolinx.StyleGuideResponse> {
         return core.HttpResponsePromise.fromPromise(this.__getStyleGuide(styleGuideId, requestOptions));
     }
 
     private async __getStyleGuide(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
+    ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 `v1/style-guides/${encodeURIComponent(styleGuideId)}`,
             ),
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
@@ -205,7 +269,7 @@ export class StyleGuides {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
+            return { data: _response.body as acrolinx.StyleGuideResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
@@ -244,89 +308,7 @@ export class StyleGuides {
     }
 
     /**
-     * @param {string} styleGuideId
-     * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link acrolinx.UnprocessableEntityError}
-     *
-     * @example
-     *     await client.styleGuides.updateStyleGuide("style_guide_id")
-     */
-    public updateStyleGuide(
-        styleGuideId: string,
-        requestOptions?: StyleGuides.RequestOptions,
-    ): core.HttpResponsePromise<unknown> {
-        return core.HttpResponsePromise.fromPromise(this.__updateStyleGuide(styleGuideId, requestOptions));
-    }
-
-    private async __updateStyleGuide(
-        styleGuideId: string,
-        requestOptions?: StyleGuides.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
-        const _response = await (this._options.fetcher ?? core.fetcher)({
-            url: urlJoin(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
-                `v1/style-guides/${encodeURIComponent(styleGuideId)}`,
-            ),
-            method: "PUT",
-            headers: {
-                "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
-                "X-Fern-Runtime": core.RUNTIME.type,
-                "X-Fern-Runtime-Version": core.RUNTIME.version,
-                ...requestOptions?.headers,
-            },
-            contentType: "application/json",
-            requestType: "json",
-            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
-            maxRetries: requestOptions?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-        });
-        if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 422:
-                    throw new acrolinx.UnprocessableEntityError(
-                        _response.error.body as acrolinx.HttpValidationError,
-                        _response.rawResponse,
-                    );
-                default:
-                    throw new errors.acrolinxError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.acrolinxError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.acrolinxTimeoutError(
-                    "Timeout exceeded when calling PUT /v1/style-guides/{style_guide_id}.",
-                );
-            case "unknown":
-                throw new errors.acrolinxError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * @param {string} styleGuideId
+     * @param {string} styleGuideId - The ID of the style guide.
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
@@ -337,29 +319,29 @@ export class StyleGuides {
     public deleteStyleGuide(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
-    ): core.HttpResponsePromise<unknown> {
+    ): core.HttpResponsePromise<void> {
         return core.HttpResponsePromise.fromPromise(this.__deleteStyleGuide(styleGuideId, requestOptions));
     }
 
     private async __deleteStyleGuide(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
+    ): Promise<core.WithRawResponse<void>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 `v1/style-guides/${encodeURIComponent(styleGuideId)}`,
             ),
             method: "DELETE",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
@@ -369,7 +351,7 @@ export class StyleGuides {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
+            return { data: undefined, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
@@ -405,5 +387,96 @@ export class StyleGuides {
                     rawResponse: _response.rawResponse,
                 });
         }
+    }
+
+    /**
+     * @param {string} styleGuideId - The ID of the style guide.
+     * @param {acrolinx.BodyStyleGuidesUpdateStyleGuide} request
+     * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link acrolinx.UnprocessableEntityError}
+     *
+     * @example
+     *     await client.styleGuides.updateStyleGuide("style_guide_id")
+     */
+    public updateStyleGuide(
+        styleGuideId: string,
+        request: acrolinx.BodyStyleGuidesUpdateStyleGuide = {},
+        requestOptions?: StyleGuides.RequestOptions,
+    ): core.HttpResponsePromise<acrolinx.StyleGuideResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__updateStyleGuide(styleGuideId, request, requestOptions));
+    }
+
+    private async __updateStyleGuide(
+        styleGuideId: string,
+        request: acrolinx.BodyStyleGuidesUpdateStyleGuide = {},
+        requestOptions?: StyleGuides.RequestOptions,
+    ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse>> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.acrolinxEnvironment.Default,
+                `v1/style-guides/${encodeURIComponent(styleGuideId)}`,
+            ),
+            method: "PATCH",
+            headers: {
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "acrolinx",
+                "X-Fern-SDK-Version": "0.0.10",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
+                ...requestOptions?.headers,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            body: request,
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return { data: _response.body as acrolinx.StyleGuideResponse, rawResponse: _response.rawResponse };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 422:
+                    throw new acrolinx.UnprocessableEntityError(
+                        _response.error.body as acrolinx.HttpValidationError,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.acrolinxError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.acrolinxError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.acrolinxTimeoutError(
+                    "Timeout exceeded when calling PATCH /v1/style-guides/{style_guide_id}.",
+                );
+            case "unknown":
+                throw new errors.acrolinxError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    protected async _getCustomAuthorizationHeaders() {
+        const apiKeyValue = await core.Supplier.get(this._options.apiKey);
+        return { Authorization: apiKeyValue };
     }
 }

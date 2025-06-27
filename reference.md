@@ -1,10 +1,25 @@
 # Reference
 
-## StyleGuides
+## Style Guides
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuides</a>() -> unknown</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuides</a>({ ...params }) -> acrolinx.StyleGuideResponse[]</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get all style guides.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -31,6 +46,14 @@ await client.styleGuides.getStyleGuides();
 <dl>
 <dd>
 
+**request:** `acrolinx.StyleGuidesGetStyleGuidesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **requestOptions:** `StyleGuides.RequestOptions`
 
 </dd>
@@ -42,7 +65,7 @@ await client.styleGuides.getStyleGuides();
 </dl>
 </details>
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">createStyleGuide</a>() -> unknown</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">createStyleGuide</a>(file_upload, { ...params }) -> acrolinx.StyleGuideResponse</code></summary>
 <dl>
 <dd>
 
@@ -55,7 +78,7 @@ await client.styleGuides.getStyleGuides();
 <dd>
 
 ```typescript
-await client.styleGuides.createStyleGuide();
+await client.styleGuides.createStyleGuide(fs.createReadStream("/path/to/your/file"), {});
 ```
 
 </dd>
@@ -71,6 +94,22 @@ await client.styleGuides.createStyleGuide();
 <dl>
 <dd>
 
+**file_upload:** `File | fs.ReadStream | Blob`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `acrolinx.StyleGuideRequestBody`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **requestOptions:** `StyleGuides.RequestOptions`
 
 </dd>
@@ -82,7 +121,7 @@ await client.styleGuides.createStyleGuide();
 </dl>
 </details>
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuide</a>(styleGuideId) -> unknown</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuide</a>(styleGuideId) -> acrolinx.StyleGuideResponse</code></summary>
 <dl>
 <dd>
 
@@ -111,7 +150,7 @@ await client.styleGuides.getStyleGuide("style_guide_id");
 <dl>
 <dd>
 
-**styleGuideId:** `string`
+**styleGuideId:** `string` — The ID of the style guide.
 
 </dd>
 </dl>
@@ -130,55 +169,7 @@ await client.styleGuides.getStyleGuide("style_guide_id");
 </dl>
 </details>
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">updateStyleGuide</a>(styleGuideId) -> unknown</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.styleGuides.updateStyleGuide("style_guide_id");
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**styleGuideId:** `string`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `StyleGuides.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">deleteStyleGuide</a>(styleGuideId) -> unknown</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">deleteStyleGuide</a>(styleGuideId) -> void</code></summary>
 <dl>
 <dd>
 
@@ -207,7 +198,7 @@ await client.styleGuides.deleteStyleGuide("style_guide_id");
 <dl>
 <dd>
 
-**styleGuideId:** `string`
+**styleGuideId:** `string` — The ID of the style guide.
 
 </dd>
 </dl>
@@ -226,9 +217,7 @@ await client.styleGuides.deleteStyleGuide("style_guide_id");
 </dl>
 </details>
 
-## StyleChecks
-
-<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">createStyleCheck</a>({ ...params }) -> unknown</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">updateStyleGuide</a>(styleGuideId, { ...params }) -> acrolinx.StyleGuideResponse</code></summary>
 <dl>
 <dd>
 
@@ -241,9 +230,7 @@ await client.styleGuides.deleteStyleGuide("style_guide_id");
 <dd>
 
 ```typescript
-await client.styleChecks.createStyleCheck({
-    document_id: "document_id",
-});
+await client.styleGuides.updateStyleGuide("style_guide_id");
 ```
 
 </dd>
@@ -259,7 +246,88 @@ await client.styleChecks.createStyleCheck({
 <dl>
 <dd>
 
-**request:** `acrolinx.CreateStyleCheckV1StyleChecksPostRequest`
+**styleGuideId:** `string` — The ID of the style guide.
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `acrolinx.BodyStyleGuidesUpdateStyleGuide`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `StyleGuides.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Style Checks
+
+<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">createStyleCheck</a>(file_upload, { ...params }) -> acrolinx.WorkflowResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Start a style and brand check run. Returns a workflow ID for each file.
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/file"), {});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**file_upload:** `File | fs.ReadStream | Blob`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `acrolinx.StyleChecksCreateStyleCheckRequest`
 
 </dd>
 </dl>
@@ -278,9 +346,24 @@ await client.styleChecks.createStyleCheck({
 </dl>
 </details>
 
-<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">getStyleCheck</a>(workflowId, { ...params }) -> acrolinx.StyleCheckResponse</code></summary>
+<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">getStyleCheck</a>(workflowId) -> acrolinx.StyleChecksGetStyleCheckResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+get the results of a style and brand check run.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -291,9 +374,7 @@ await client.styleChecks.createStyleCheck({
 <dd>
 
 ```typescript
-await client.styleChecks.getStyleCheck("workflow_id", {
-    document_id: "document_id",
-});
+await client.styleChecks.getStyleCheck("workflow_id");
 ```
 
 </dd>
@@ -317,14 +398,6 @@ await client.styleChecks.getStyleCheck("workflow_id", {
 <dl>
 <dd>
 
-**request:** `acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **requestOptions:** `StyleChecks.RequestOptions`
 
 </dd>
@@ -336,11 +409,26 @@ await client.styleChecks.getStyleCheck("workflow_id", {
 </dl>
 </details>
 
-## StyleSuggestions
+## Style Suggestions
 
-<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">createStyleSuggestion</a>({ ...params }) -> unknown</code></summary>
+<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">createStyleSuggestion</a>(file_upload, { ...params }) -> acrolinx.WorkflowResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Start a style and brand suggestion run. Returns a workflow ID for each file.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -351,9 +439,7 @@ await client.styleChecks.getStyleCheck("workflow_id", {
 <dd>
 
 ```typescript
-await client.styleSuggestions.createStyleSuggestion({
-    document_id: "document_id",
-});
+await client.styleSuggestions.createStyleSuggestion(fs.createReadStream("/path/to/your/file"), {});
 ```
 
 </dd>
@@ -369,7 +455,15 @@ await client.styleSuggestions.createStyleSuggestion({
 <dl>
 <dd>
 
-**request:** `acrolinx.CreateStyleSuggestionV1StyleSuggestionsPostRequest`
+**file_upload:** `File | fs.ReadStream | Blob`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `acrolinx.StyleSuggestionsCreateStyleSuggestionRequest`
 
 </dd>
 </dl>
@@ -388,9 +482,24 @@ await client.styleSuggestions.createStyleSuggestion({
 </dl>
 </details>
 
-<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">getStyleSuggestion</a>(workflowId, { ...params }) -> acrolinx.SuggestionResponse</code></summary>
+<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">getStyleSuggestion</a>(workflowId) -> acrolinx.StyleSuggestionsGetStyleSuggestionResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get the results of a suggestion run.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -401,9 +510,7 @@ await client.styleSuggestions.createStyleSuggestion({
 <dd>
 
 ```typescript
-await client.styleSuggestions.getStyleSuggestion("workflow_id", {
-    document_id: "document_id",
-});
+await client.styleSuggestions.getStyleSuggestion("workflow_id");
 ```
 
 </dd>
@@ -427,14 +534,6 @@ await client.styleSuggestions.getStyleSuggestion("workflow_id", {
 <dl>
 <dd>
 
-**request:** `acrolinx.GetStyleSuggestionV1StyleSuggestionsWorkflowIdGetRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **requestOptions:** `StyleSuggestions.RequestOptions`
 
 </dd>
@@ -446,11 +545,26 @@ await client.styleSuggestions.getStyleSuggestion("workflow_id", {
 </dl>
 </details>
 
-## StyleRewrites
+## Style Rewrites
 
-<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">createStyleRewrite</a>({ ...params }) -> unknown</code></summary>
+<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">createStyleRewrite</a>(file_upload, { ...params }) -> acrolinx.WorkflowResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Start a rewrite run for one or many files. Returns a workflow ID for each file.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -461,9 +575,7 @@ await client.styleSuggestions.getStyleSuggestion("workflow_id", {
 <dd>
 
 ```typescript
-await client.styleRewrites.createStyleRewrite({
-    document_id: "document_id",
-});
+await client.styleRewrites.createStyleRewrite(fs.createReadStream("/path/to/your/file"), {});
 ```
 
 </dd>
@@ -479,7 +591,15 @@ await client.styleRewrites.createStyleRewrite({
 <dl>
 <dd>
 
-**request:** `acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest`
+**file_upload:** `File | fs.ReadStream | Blob`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `acrolinx.StyleRewritesCreateStyleRewriteRequest`
 
 </dd>
 </dl>
@@ -498,9 +618,24 @@ await client.styleRewrites.createStyleRewrite({
 </dl>
 </details>
 
-<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId, { ...params }) -> acrolinx.RewriteResponse</code></summary>
+<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId) -> acrolinx.StyleRewritesGetStyleRewriteResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Get the results of a rewrite run.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -511,9 +646,7 @@ await client.styleRewrites.createStyleRewrite({
 <dd>
 
 ```typescript
-await client.styleRewrites.getStyleRewrite("workflow_id", {
-    document_id: "document_id",
-});
+await client.styleRewrites.getStyleRewrite("workflow_id");
 ```
 
 </dd>
@@ -530,14 +663,6 @@ await client.styleRewrites.getStyleRewrite("workflow_id", {
 <dd>
 
 **workflowId:** `string`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request:** `acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest`
 
 </dd>
 </dl>

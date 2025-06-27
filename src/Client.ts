@@ -14,6 +14,8 @@ export declare namespace acrolinxClient {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        /** Override the Authorization header */
+        apiKey: core.Supplier<string>;
         fetcher?: core.FetchFunction;
     }
 
@@ -24,6 +26,8 @@ export declare namespace acrolinxClient {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Override the Authorization header */
+        apiKey?: string;
         /** Additional headers to include in the request. */
         headers?: Record<string, string>;
     }
@@ -35,7 +39,7 @@ export class acrolinxClient {
     protected _styleSuggestions: StyleSuggestions | undefined;
     protected _styleRewrites: StyleRewrites | undefined;
 
-    constructor(protected readonly _options: acrolinxClient.Options = {}) {}
+    constructor(protected readonly _options: acrolinxClient.Options) {}
 
     public get styleGuides(): StyleGuides {
         return (this._styleGuides ??= new StyleGuides(this._options));

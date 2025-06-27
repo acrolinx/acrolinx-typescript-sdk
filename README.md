@@ -1,9 +1,9 @@
-# Acrolinx576596 TypeScript Library
+# Acrolinx TypeScript Library
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Ffern-demo%2Facrolinx-typescript-sdk)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Facrolinx%2Facrolinx-typescript-sdk)
 [![npm shield](https://img.shields.io/npm/v/acrolinx)](https://www.npmjs.com/package/acrolinx)
 
-The Acrolinx576596 TypeScript library provides convenient access to the Acrolinx576596 API from TypeScript.
+The Acrolinx TypeScript library provides convenient access to the Acrolinx API from TypeScript.
 
 ## Installation
 
@@ -13,7 +13,7 @@ npm i -s acrolinx
 
 ## Reference
 
-A full reference for this library is available [here](./reference.md).
+A full reference for this library is available [here](https://github.com/acrolinx/acrolinx-typescript-sdk/blob/HEAD/./reference.md).
 
 ## Usage
 
@@ -21,9 +21,10 @@ Instantiate and use the client with the following:
 
 ```typescript
 import { acrolinxClient } from "acrolinx";
+import * as fs from "fs";
 
-const client = new acrolinxClient();
-await client.styleGuides.createStyleGuide();
+const client = new acrolinxClient({ apiKey: "YOUR_API_KEY" });
+await client.styleGuides.createStyleGuide(fs.createReadStream("/path/to/your/file"), {});
 ```
 
 ## Request And Response Types
@@ -34,7 +35,7 @@ following namespace:
 ```typescript
 import { acrolinx } from "acrolinx";
 
-const request: acrolinx.CreateStyleCheckV1StyleChecksPostRequest = {
+const request: acrolinx.StyleGuidesGetStyleGuidesRequest = {
     ...
 };
 ```

@@ -5,6 +5,8 @@
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
 import * as acrolinx from "../../../index";
+import * as fs from "fs";
+import { Blob } from "buffer";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
@@ -13,6 +15,8 @@ export declare namespace StyleSuggestions {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        /** Override the Authorization header */
+        apiKey: core.Supplier<string>;
         fetcher?: core.FetchFunction;
     }
 
@@ -23,65 +27,86 @@ export declare namespace StyleSuggestions {
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Override the Authorization header */
+        apiKey?: string;
         /** Additional headers to include in the request. */
         headers?: Record<string, string>;
     }
 }
 
+/**
+ * Get detailed results from style checks, including flagged issues and suggestions for how to fix them. Perfect for polishing content and staying on-brand.
+ */
 export class StyleSuggestions {
-    constructor(protected readonly _options: StyleSuggestions.Options = {}) {}
+    constructor(protected readonly _options: StyleSuggestions.Options) {}
 
     /**
-     * @param {acrolinx.CreateStyleSuggestionV1StyleSuggestionsPostRequest} request
+     * Start a style and brand suggestion run. Returns a workflow ID for each file.
+     *
+     * @param {File | fs.ReadStream | Blob} file_upload
+     * @param {acrolinx.StyleSuggestionsCreateStyleSuggestionRequest} request
      * @param {StyleSuggestions.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
-     *     await client.styleSuggestions.createStyleSuggestion({
-     *         document_id: "document_id"
-     *     })
+     *     await client.styleSuggestions.createStyleSuggestion(fs.createReadStream("/path/to/your/file"), {})
      */
     public createStyleSuggestion(
-        request: acrolinx.CreateStyleSuggestionV1StyleSuggestionsPostRequest,
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleSuggestionsCreateStyleSuggestionRequest,
         requestOptions?: StyleSuggestions.RequestOptions,
-    ): core.HttpResponsePromise<unknown> {
-        return core.HttpResponsePromise.fromPromise(this.__createStyleSuggestion(request, requestOptions));
+    ): core.HttpResponsePromise<acrolinx.WorkflowResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createStyleSuggestion(file_upload, request, requestOptions));
     }
 
     private async __createStyleSuggestion(
-        request: acrolinx.CreateStyleSuggestionV1StyleSuggestionsPostRequest,
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleSuggestionsCreateStyleSuggestionRequest,
         requestOptions?: StyleSuggestions.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
-        const { document_id: documentId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["document_id"] = documentId;
+    ): Promise<core.WithRawResponse<acrolinx.WorkflowResponse>> {
+        const _request = await core.newFormData();
+        await _request.appendFile("file_upload", file_upload);
+        if (request.dialect != null) {
+            _request.append("dialect", request.dialect);
+        }
+
+        if (request.tone != null) {
+            _request.append("tone", request.tone);
+        }
+
+        if (request.style_guide != null) {
+            _request.append("style_guide", request.style_guide);
+        }
+
+        const _maybeEncodedRequest = await _request.getRequest();
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 "v1/style/suggestions",
             ),
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
+                ..._maybeEncodedRequest.headers,
                 ...requestOptions?.headers,
             },
-            contentType: "application/json",
-            queryParameters: _queryParams,
-            requestType: "json",
+            requestType: "file",
+            duplex: _maybeEncodedRequest.duplex,
+            body: _maybeEncodedRequest.body,
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
+            return { data: _response.body as acrolinx.WorkflowResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
@@ -118,59 +143,55 @@ export class StyleSuggestions {
     }
 
     /**
+     * Get the results of a suggestion run.
+     *
      * @param {string} workflowId
-     * @param {acrolinx.GetStyleSuggestionV1StyleSuggestionsWorkflowIdGetRequest} request
      * @param {StyleSuggestions.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
-     *     await client.styleSuggestions.getStyleSuggestion("workflow_id", {
-     *         document_id: "document_id"
-     *     })
+     *     await client.styleSuggestions.getStyleSuggestion("workflow_id")
      */
     public getStyleSuggestion(
         workflowId: string,
-        request: acrolinx.GetStyleSuggestionV1StyleSuggestionsWorkflowIdGetRequest,
         requestOptions?: StyleSuggestions.RequestOptions,
-    ): core.HttpResponsePromise<acrolinx.SuggestionResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__getStyleSuggestion(workflowId, request, requestOptions));
+    ): core.HttpResponsePromise<acrolinx.StyleSuggestionsGetStyleSuggestionResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__getStyleSuggestion(workflowId, requestOptions));
     }
 
     private async __getStyleSuggestion(
         workflowId: string,
-        request: acrolinx.GetStyleSuggestionV1StyleSuggestionsWorkflowIdGetRequest,
         requestOptions?: StyleSuggestions.RequestOptions,
-    ): Promise<core.WithRawResponse<acrolinx.SuggestionResponse>> {
-        const { document_id: documentId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["document_id"] = documentId;
+    ): Promise<core.WithRawResponse<acrolinx.StyleSuggestionsGetStyleSuggestionResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 `v1/style/suggestions/${encodeURIComponent(workflowId)}`,
             ),
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...(await this._getCustomAuthorizationHeaders()),
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
-            queryParameters: _queryParams,
             requestType: "json",
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body as acrolinx.SuggestionResponse, rawResponse: _response.rawResponse };
+            return {
+                data: _response.body as acrolinx.StyleSuggestionsGetStyleSuggestionResponse,
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
@@ -206,5 +227,10 @@ export class StyleSuggestions {
                     rawResponse: _response.rawResponse,
                 });
         }
+    }
+
+    protected async _getCustomAuthorizationHeaders() {
+        const apiKeyValue = await core.Supplier.get(this._options.apiKey);
+        return { Authorization: apiKeyValue };
     }
 }

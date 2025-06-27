@@ -3,7 +3,7 @@
  */
 
 export const acrolinxEnvironment = {
-    Production: "https://api.acrolinx.com",
+    Default: "http://helios.api.localhost",
 } as const;
 
-export type acrolinxEnvironment = typeof acrolinxEnvironment.Production;
+export type acrolinxEnvironment = typeof acrolinxEnvironment.Default;
