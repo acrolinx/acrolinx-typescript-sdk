@@ -1,7 +1,10 @@
-export * as styleGuides from "./styleGuides";
 export * as styleChecks from "./styleChecks";
+export * from "./styleChecks/types";
 export * as styleSuggestions from "./styleSuggestions";
+export * from "./styleSuggestions/types";
+export * as styleGuides from "./styleGuides";
 export * as styleRewrites from "./styleRewrites";
+export * from "./styleGuides/client/requests";
 export * from "./styleChecks/client/requests";
 export * from "./styleSuggestions/client/requests";
 export * from "./styleRewrites/client/requests";

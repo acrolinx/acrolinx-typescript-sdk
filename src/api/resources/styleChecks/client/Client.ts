@@ -5,6 +5,8 @@
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
 import * as acrolinx from "../../../index";
+import * as fs from "fs";
+import { Blob } from "buffer";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
@@ -28,67 +30,88 @@ export declare namespace StyleChecks {
     }
 }
 
+/**
+ * Analyze your content to spot issues that go against your style guide or brand voice. Use this to catch tone, grammar, or readability problems before publishing.
+ */
 export class StyleChecks {
     constructor(protected readonly _options: StyleChecks.Options = {}) {}
 
     /**
-     * @param {acrolinx.CreateStyleCheckV1StyleChecksPostRequest} request
+     * Start a style and brand check run. Returns a workflow ID for each file.
+     *
+     * @param {File | fs.ReadStream | Blob} file_upload
+     * @param {acrolinx.StyleChecksCreateStyleCheckRequest} request
      * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
-     *     await client.styleChecks.createStyleCheck({
-     *         document_id: "document_id"
-     *     })
+     *     await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/file"), {})
      */
     public createStyleCheck(
-        request: acrolinx.CreateStyleCheckV1StyleChecksPostRequest,
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleChecksCreateStyleCheckRequest,
         requestOptions?: StyleChecks.RequestOptions,
-    ): core.HttpResponsePromise<unknown> {
-        return core.HttpResponsePromise.fromPromise(this.__createStyleCheck(request, requestOptions));
+    ): core.HttpResponsePromise<acrolinx.WorkflowResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createStyleCheck(file_upload, request, requestOptions));
     }
 
     private async __createStyleCheck(
-        request: acrolinx.CreateStyleCheckV1StyleChecksPostRequest,
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleChecksCreateStyleCheckRequest,
         requestOptions?: StyleChecks.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
-        const { document_id: documentId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["document_id"] = documentId;
+    ): Promise<core.WithRawResponse<acrolinx.WorkflowResponse>> {
+        const _request = await core.newFormData();
+        await _request.appendFile("file_upload", file_upload);
+        if (request.dialect != null) {
+            _request.append("dialect", request.dialect);
+        }
+
+        if (request.tone != null) {
+            _request.append("tone", request.tone);
+        }
+
+        if (request.style_guide != null) {
+            _request.append("style_guide", request.style_guide);
+        }
+
+        const _maybeEncodedRequest = await _request.getRequest();
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 "v1/style/checks",
             ),
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.13",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ..._maybeEncodedRequest.headers,
                 ...requestOptions?.headers,
             },
-            contentType: "application/json",
-            queryParameters: _queryParams,
-            requestType: "json",
+            requestType: "file",
+            duplex: _maybeEncodedRequest.duplex,
+            body: _maybeEncodedRequest.body,
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
+            return { data: _response.body as acrolinx.WorkflowResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new acrolinx.UnprocessableEntityError(
-                        _response.error.body as acrolinx.HttpValidationError,
+                    throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
                         _response.rawResponse,
                     );
                 default:
@@ -118,68 +141,60 @@ export class StyleChecks {
     }
 
     /**
+     * get the results of a style and brand check run.
+     *
      * @param {string} workflowId
-     * @param {acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest} request
      * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
-     *     await client.styleChecks.getStyleCheck("workflow_id", {
-     *         document_id: "document_id"
-     *     })
+     *     await client.styleChecks.getStyleCheck("workflow_id")
      */
     public getStyleCheck(
         workflowId: string,
-        request: acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest,
         requestOptions?: StyleChecks.RequestOptions,
-    ): core.HttpResponsePromise<acrolinx.StyleCheckResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__getStyleCheck(workflowId, request, requestOptions));
+    ): core.HttpResponsePromise<acrolinx.StyleChecksGetStyleCheckResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__getStyleCheck(workflowId, requestOptions));
     }
 
     private async __getStyleCheck(
         workflowId: string,
-        request: acrolinx.GetStyleCheckV1StyleChecksWorkflowIdGetRequest,
         requestOptions?: StyleChecks.RequestOptions,
-    ): Promise<core.WithRawResponse<acrolinx.StyleCheckResponse>> {
-        const { document_id: documentId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["document_id"] = documentId;
+    ): Promise<core.WithRawResponse<acrolinx.StyleChecksGetStyleCheckResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 `v1/style/checks/${encodeURIComponent(workflowId)}`,
             ),
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.13",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
-            queryParameters: _queryParams,
             requestType: "json",
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body as acrolinx.StyleCheckResponse, rawResponse: _response.rawResponse };
+            return {
+                data: _response.body as acrolinx.StyleChecksGetStyleCheckResponse,
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new acrolinx.UnprocessableEntityError(
-                        _response.error.body as acrolinx.HttpValidationError,
-                        _response.rawResponse,
-                    );
+                    throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
                 default:
                     throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,

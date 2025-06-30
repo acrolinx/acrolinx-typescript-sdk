@@ -5,6 +5,8 @@
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
 import * as acrolinx from "../../../index";
+import * as fs from "fs";
+import { Blob } from "buffer";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
@@ -28,67 +30,88 @@ export declare namespace StyleRewrites {
     }
 }
 
+/**
+ * Includes all information from style suggestions, plus a rewrite of the text.
+ */
 export class StyleRewrites {
     constructor(protected readonly _options: StyleRewrites.Options = {}) {}
 
     /**
-     * @param {acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest} request
+     * Start a rewrite run for one or many files. Returns a workflow ID for each file.
+     *
+     * @param {File | fs.ReadStream | Blob} file_upload
+     * @param {acrolinx.StyleRewritesCreateStyleRewriteRequest} request
      * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
-     *     await client.styleRewrites.createStyleRewrite({
-     *         document_id: "document_id"
-     *     })
+     *     await client.styleRewrites.createStyleRewrite(fs.createReadStream("/path/to/your/file"), {})
      */
     public createStyleRewrite(
-        request: acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest,
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleRewritesCreateStyleRewriteRequest,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): core.HttpResponsePromise<unknown> {
-        return core.HttpResponsePromise.fromPromise(this.__createStyleRewrite(request, requestOptions));
+    ): core.HttpResponsePromise<acrolinx.WorkflowResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createStyleRewrite(file_upload, request, requestOptions));
     }
 
     private async __createStyleRewrite(
-        request: acrolinx.CreateStyleRewriteV1StyleRewritesPostRequest,
+        file_upload: File | fs.ReadStream | Blob,
+        request: acrolinx.StyleRewritesCreateStyleRewriteRequest,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): Promise<core.WithRawResponse<unknown>> {
-        const { document_id: documentId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["document_id"] = documentId;
+    ): Promise<core.WithRawResponse<acrolinx.WorkflowResponse>> {
+        const _request = await core.newFormData();
+        await _request.appendFile("file_upload", file_upload);
+        if (request.dialect != null) {
+            _request.append("dialect", request.dialect);
+        }
+
+        if (request.tone != null) {
+            _request.append("tone", request.tone);
+        }
+
+        if (request.style_guide != null) {
+            _request.append("style_guide", request.style_guide);
+        }
+
+        const _maybeEncodedRequest = await _request.getRequest();
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 "v1/style/rewrites",
             ),
             method: "POST",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.13",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ..._maybeEncodedRequest.headers,
                 ...requestOptions?.headers,
             },
-            contentType: "application/json",
-            queryParameters: _queryParams,
-            requestType: "json",
+            requestType: "file",
+            duplex: _maybeEncodedRequest.duplex,
+            body: _maybeEncodedRequest.body,
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body, rawResponse: _response.rawResponse };
+            return { data: _response.body as acrolinx.WorkflowResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 422:
-                    throw new acrolinx.UnprocessableEntityError(
-                        _response.error.body as acrolinx.HttpValidationError,
+                    throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
                         _response.rawResponse,
                     );
                 default:
@@ -118,52 +141,46 @@ export class StyleRewrites {
     }
 
     /**
+     * Get the results of a rewrite run.
+     *
      * @param {string} workflowId
-     * @param {acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest} request
      * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link acrolinx.NotFoundError}
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
-     *     await client.styleRewrites.getStyleRewrite("workflow_id", {
-     *         document_id: "document_id"
-     *     })
+     *     await client.styleRewrites.getStyleRewrite("workflow_id")
      */
     public getStyleRewrite(
         workflowId: string,
-        request: acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest,
         requestOptions?: StyleRewrites.RequestOptions,
     ): core.HttpResponsePromise<acrolinx.RewriteResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__getStyleRewrite(workflowId, request, requestOptions));
+        return core.HttpResponsePromise.fromPromise(this.__getStyleRewrite(workflowId, requestOptions));
     }
 
     private async __getStyleRewrite(
         workflowId: string,
-        request: acrolinx.GetStyleRewriteV1StyleRewritesWorkflowIdGetRequest,
         requestOptions?: StyleRewrites.RequestOptions,
     ): Promise<core.WithRawResponse<acrolinx.RewriteResponse>> {
-        const { document_id: documentId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["document_id"] = documentId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Production,
+                    environments.acrolinxEnvironment.Default,
                 `v1/style/rewrites/${encodeURIComponent(workflowId)}`,
             ),
             method: "GET",
             headers: {
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx/0.0.1",
+                "X-Fern-SDK-Version": "0.0.13",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
-            queryParameters: _queryParams,
             requestType: "json",
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
@@ -175,9 +192,16 @@ export class StyleRewrites {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
+                case 404:
+                    throw new acrolinx.NotFoundError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 case 422:
-                    throw new acrolinx.UnprocessableEntityError(
-                        _response.error.body as acrolinx.HttpValidationError,
+                    throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
                         _response.rawResponse,
                     );
                 default:
