@@ -5,7 +5,8 @@
 import * as acrolinx from "../index";
 
 export interface SuggestionResponse {
-    style_guide_id: string;
-    scores: acrolinx.Scores;
+    status: acrolinx.StyleGuideStatus;
+    scores?: acrolinx.ScoreOutput;
     issues: acrolinx.Suggestion[];
+    check_options: acrolinx.CheckOptions;
 }

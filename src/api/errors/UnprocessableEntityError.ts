@@ -3,11 +3,10 @@
  */
 
 import * as errors from "../../errors/index";
-import * as acrolinx from "../index";
 import * as core from "../../core";
 
 export class UnprocessableEntityError extends errors.acrolinxError {
-    constructor(body: acrolinx.HttpValidationError, rawResponse?: core.RawResponse) {
+    constructor(body?: unknown, rawResponse?: core.RawResponse) {
         super({
             message: "UnprocessableEntityError",
             statusCode: 422,

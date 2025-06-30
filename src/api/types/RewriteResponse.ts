@@ -5,8 +5,10 @@
 import * as acrolinx from "../index";
 
 export interface RewriteResponse {
-    style_guide_id: string;
-    scores: acrolinx.Scores;
+    status: acrolinx.StyleGuideStatus;
+    scores?: acrolinx.ScoreOutput;
     issues: acrolinx.Suggestion[];
-    rewrite: string;
+    check_options: acrolinx.CheckOptions;
+    rewrite?: string;
+    rewrite_scores?: acrolinx.ScoreOutput;
 }
