@@ -1,14 +1,14 @@
 # Acrolinx TypeScript Library
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Facrolinx%2Facrolinx-typescript-sdk)
-[![npm shield](https://img.shields.io/npm/v/acrolinx)](https://www.npmjs.com/package/acrolinx)
+[![npm shield](https://img.shields.io/npm/v/acrolinx-nextgen-api)](https://www.npmjs.com/package/acrolinx-nextgen-api)
 
 The Acrolinx TypeScript library provides convenient access to the Acrolinx API from TypeScript.
 
 ## Installation
 
 ```sh
-npm i -s acrolinx
+npm i -s acrolinx-nextgen-api
 ```
 
 ## Reference
@@ -20,7 +20,7 @@ A full reference for this library is available [here](https://github.com/acrolin
 Instantiate and use the client with the following:
 
 ```typescript
-import { acrolinxClient } from "acrolinx";
+import { acrolinxClient } from "acrolinx-nextgen-api";
 import * as fs from "fs";
 
 const client = new acrolinxClient({ token: "YOUR_TOKEN" });
@@ -33,7 +33,7 @@ The SDK exports all request and response types as TypeScript interfaces. Simply 
 following namespace:
 
 ```typescript
-import { acrolinx } from "acrolinx";
+import { acrolinx } from "acrolinx-nextgen-api";
 
 const request: acrolinx.StyleGuidesGetStyleGuidesRequest = {
     ...
@@ -46,7 +46,7 @@ When the API returns a non-success status code (4xx or 5xx response), a subclass
 will be thrown.
 
 ```typescript
-import { acrolinxError } from "acrolinx";
+import { acrolinxError } from "acrolinx-nextgen-api";
 
 try {
     await client.styleGuides.createStyleGuide(...);
@@ -146,7 +146,7 @@ The SDK provides a way for you to customize the underlying HTTP client / Fetch f
 unsupported environment, this provides a way for you to break glass and ensure the SDK works.
 
 ```typescript
-import { acrolinxClient } from "acrolinx";
+import { acrolinxClient } from "acrolinx-nextgen-api";
 
 const client = new acrolinxClient({
     ...

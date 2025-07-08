@@ -89,8 +89,9 @@ export class StyleSuggestions {
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.30",
+                "X-Fern-SDK-Name": "acrolinx-nextgen-api",
+                "X-Fern-SDK-Version": "0.0.0-beta.0",
+                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -176,8 +177,9 @@ export class StyleSuggestions {
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.30",
+                "X-Fern-SDK-Name": "acrolinx-nextgen-api",
+                "X-Fern-SDK-Version": "0.0.0-beta.0",
+                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
