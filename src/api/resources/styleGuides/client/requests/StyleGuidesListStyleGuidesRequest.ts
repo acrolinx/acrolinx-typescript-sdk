@@ -6,7 +6,7 @@
  * @example
  *     {}
  */
-export interface StyleGuidesGetStyleGuidesRequest {
+export interface StyleGuidesListStyleGuidesRequest {
     offset?: number;
     limit?: number;
 }

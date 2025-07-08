@@ -6,13 +6,17 @@ import * as acrolinx from "../../../../index";
 
 /**
  * @example
- *     {}
+ *     {
+ *         dialect: "american_english",
+ *         tone: "academic",
+ *         style_guide: "style_guide"
+ *     }
  */
 export interface StyleSuggestionsCreateStyleSuggestionRequest {
     /** The language variant you'd like us to use for analysis. Choose from American English, British English, or other supported dialects. */
-    dialect?: acrolinx.Dialects;
+    dialect: acrolinx.Dialects;
     /** The tone variation you're aiming for. Options include formal, academic, casual, and other tone variations to match your content goals. */
-    tone?: acrolinx.Tones;
+    tone: acrolinx.Tones;
     /** The style guide to follow for your content. You can use a custom style guide ID or choose from built-in options like AP, Chicago, or Microsoft style guides. */
-    style_guide?: string;
+    style_guide: string;
 }
