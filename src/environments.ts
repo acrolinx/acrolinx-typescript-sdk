@@ -3,7 +3,7 @@
  */
 
 export const acrolinxEnvironment = {
-    Default: "https://app.acrolinx.cloud",
+    Production: "https://app.acrolinx.cloud",
 } as const;
 
-export type acrolinxEnvironment = typeof acrolinxEnvironment.Default;
+export type acrolinxEnvironment = typeof acrolinxEnvironment.Production;

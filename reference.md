@@ -618,7 +618,7 @@ await client.styleRewrites.createStyleRewrite(fs.createReadStream("/path/to/your
 </dl>
 </details>
 
-<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId) -> acrolinx.RewriteResponse</code></summary>
+<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId) -> acrolinx.StyleRewritesGetStyleRewriteResponse</code></summary>
 <dl>
 <dd>
 

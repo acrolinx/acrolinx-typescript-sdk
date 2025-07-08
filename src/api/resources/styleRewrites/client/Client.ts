@@ -15,6 +15,7 @@ export declare namespace StyleRewrites {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -34,7 +35,7 @@ export declare namespace StyleRewrites {
  * Includes all information from style suggestions, plus a rewrite of the text.
  */
 export class StyleRewrites {
-    constructor(protected readonly _options: StyleRewrites.Options = {}) {}
+    constructor(protected readonly _options: StyleRewrites.Options) {}
 
     /**
      * Start a rewrite run for one or many files. Returns a workflow ID for each file.
@@ -81,14 +82,15 @@ export class StyleRewrites {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 "v1/style/rewrites",
             ),
             method: "POST",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -148,7 +150,6 @@ export class StyleRewrites {
      *
      * @throws {@link acrolinx.NotFoundError}
      * @throws {@link acrolinx.UnprocessableEntityError}
-     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
      *     await client.styleRewrites.getStyleRewrite("workflow_id")
@@ -156,26 +157,27 @@ export class StyleRewrites {
     public getStyleRewrite(
         workflowId: string,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): core.HttpResponsePromise<acrolinx.RewriteResponse> {
+    ): core.HttpResponsePromise<acrolinx.StyleRewritesGetStyleRewriteResponse> {
         return core.HttpResponsePromise.fromPromise(this.__getStyleRewrite(workflowId, requestOptions));
     }
 
     private async __getStyleRewrite(
         workflowId: string,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): Promise<core.WithRawResponse<acrolinx.RewriteResponse>> {
+    ): Promise<core.WithRawResponse<acrolinx.StyleRewritesGetStyleRewriteResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 `v1/style/rewrites/${encodeURIComponent(workflowId)}`,
             ),
             method: "GET",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -187,7 +189,10 @@ export class StyleRewrites {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body as acrolinx.RewriteResponse, rawResponse: _response.rawResponse };
+            return {
+                data: _response.body as acrolinx.StyleRewritesGetStyleRewriteResponse,
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
@@ -199,11 +204,6 @@ export class StyleRewrites {
                     );
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
-                case 500:
-                    throw new acrolinx.InternalServerError(
-                        _response.error.body as acrolinx.ErrorResponse,
-                        _response.rawResponse,
-                    );
                 default:
                     throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
@@ -230,5 +230,9 @@ export class StyleRewrites {
                     rawResponse: _response.rawResponse,
                 });
         }
+    }
+
+    protected async _getAuthorizationHeader(): Promise<string> {
+        return `Bearer ${await core.Supplier.get(this._options.token)}`;
     }
 }

@@ -8,4 +8,5 @@ export interface FinalScores {
     acrolinx_score?: acrolinx.AcrolinxScorerActivityOutput;
     content_score?: acrolinx.ContentScorerActivityOutput;
     issue_score?: acrolinx.IssueScores;
+    quality_score?: number;
 }

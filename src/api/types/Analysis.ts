@@ -16,4 +16,8 @@ export interface Analysis {
     tone_score?: number;
     informality_score?: number;
     liveliness_score?: number;
+    target_informality?: number;
+    target_liveliness?: number;
+    informality_tolerance?: number;
+    liveliness_tolerance?: number;
 }

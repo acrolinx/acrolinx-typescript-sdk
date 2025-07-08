@@ -7,6 +7,6 @@
  *     {}
  */
 export interface StyleGuideRequestBody {
-    /** The name of the style guide. */
+    /** A friendly name for your style guide to help you identify it later. If left empty, we'll generate one for you. */
     name?: string;
 }

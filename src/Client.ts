@@ -14,6 +14,7 @@ export declare namespace acrolinxClient {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -35,7 +36,7 @@ export class acrolinxClient {
     protected _styleSuggestions: StyleSuggestions | undefined;
     protected _styleRewrites: StyleRewrites | undefined;
 
-    constructor(protected readonly _options: acrolinxClient.Options = {}) {}
+    constructor(protected readonly _options: acrolinxClient.Options) {}
 
     public get styleGuides(): StyleGuides {
         return (this._styleGuides ??= new StyleGuides(this._options));

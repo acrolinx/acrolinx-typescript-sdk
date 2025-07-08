@@ -9,10 +9,10 @@ import * as acrolinx from "../../../../index";
  *     {}
  */
 export interface StyleRewritesCreateStyleRewriteRequest {
-    /** The intended dialect of the text to edit. */
+    /** The language variant you'd like us to use for analysis. Choose from American English, British English, or other supported dialects. */
     dialect?: acrolinx.Dialects;
-    /** The intended tone of the text to edit. */
+    /** The tone variation you're aiming for. Options include formal, academic, casual, and other tone variations to match your content goals. */
     tone?: acrolinx.Tones;
-    /** The style guide to use for the text to edit. Can be a style guide ID or the name of a generic style guide, e.g. 'ap', 'chicago', or 'microsoft'. */
+    /** The style guide to follow for your content. You can use a custom style guide ID or choose from built-in options like AP, Chicago, or Microsoft style guides. */
     style_guide?: string;
 }

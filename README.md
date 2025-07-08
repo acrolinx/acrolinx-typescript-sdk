@@ -23,7 +23,7 @@ Instantiate and use the client with the following:
 import { acrolinxClient } from "acrolinx";
 import * as fs from "fs";
 
-const client = new acrolinxClient();
+const client = new acrolinxClient({ token: "YOUR_TOKEN" });
 await client.styleGuides.createStyleGuide(fs.createReadStream("/path/to/your/file"), {});
 ```
 

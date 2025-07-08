@@ -4,8 +4,8 @@
 
 import * as acrolinx from "../../../index";
 
-export type StyleSuggestionsGetStyleSuggestionResponse =
-    | acrolinx.SuggestionResponse
+export type StyleRewritesGetStyleRewriteResponse =
+    | acrolinx.RewriteResponse
     | acrolinx.WorkflowStatusResponse
     | acrolinx.StyleCheckResponse
     | acrolinx.Rfc9457Error;
