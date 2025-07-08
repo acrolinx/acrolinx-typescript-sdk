@@ -15,6 +15,7 @@ export declare namespace StyleGuides {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -34,7 +35,7 @@ export declare namespace StyleGuides {
  * Endpoints related to creating, updating, and organizing style guides for content consistency across teams.
  */
 export class StyleGuides {
-    constructor(protected readonly _options: StyleGuides.Options = {}) {}
+    constructor(protected readonly _options: StyleGuides.Options) {}
 
     /**
      * Get all style guides.
@@ -72,14 +73,15 @@ export class StyleGuides {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 "v1/style-guides",
             ),
             method: "GET",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -160,14 +162,15 @@ export class StyleGuides {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 "v1/style-guides",
             ),
             method: "POST",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -243,14 +246,15 @@ export class StyleGuides {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 `v1/style-guides/${encodeURIComponent(styleGuideId)}`,
             ),
             method: "GET",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -321,14 +325,15 @@ export class StyleGuides {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 `v1/style-guides/${encodeURIComponent(styleGuideId)}`,
             ),
             method: "DELETE",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -402,14 +407,15 @@ export class StyleGuides {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 `v1/style-guides/${encodeURIComponent(styleGuideId)}`,
             ),
             method: "PATCH",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -455,5 +461,9 @@ export class StyleGuides {
                     rawResponse: _response.rawResponse,
                 });
         }
+    }
+
+    protected async _getAuthorizationHeader(): Promise<string> {
+        return `Bearer ${await core.Supplier.get(this._options.token)}`;
     }
 }

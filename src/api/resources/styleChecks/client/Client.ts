@@ -15,6 +15,7 @@ export declare namespace StyleChecks {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -34,7 +35,7 @@ export declare namespace StyleChecks {
  * Analyze your content to spot issues that go against your style guide or brand voice. Use this to catch tone, grammar, or readability problems before publishing.
  */
 export class StyleChecks {
-    constructor(protected readonly _options: StyleChecks.Options = {}) {}
+    constructor(protected readonly _options: StyleChecks.Options) {}
 
     /**
      * Start a style and brand check run. Returns a workflow ID for each file.
@@ -81,14 +82,15 @@ export class StyleChecks {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 "v1/style/checks",
             ),
             method: "POST",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -146,6 +148,7 @@ export class StyleChecks {
      * @param {string} workflowId
      * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link acrolinx.NotFoundError}
      * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
@@ -166,14 +169,15 @@ export class StyleChecks {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 `v1/style/checks/${encodeURIComponent(workflowId)}`,
             ),
             method: "GET",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -193,6 +197,11 @@ export class StyleChecks {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
+                case 404:
+                    throw new acrolinx.NotFoundError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
                 default:
@@ -221,5 +230,9 @@ export class StyleChecks {
                     rawResponse: _response.rawResponse,
                 });
         }
+    }
+
+    protected async _getAuthorizationHeader(): Promise<string> {
+        return `Bearer ${await core.Supplier.get(this._options.token)}`;
     }
 }

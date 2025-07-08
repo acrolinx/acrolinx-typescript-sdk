@@ -9,8 +9,12 @@ export interface TermReplaceChange {
     original: string;
     /** The modified text */
     modified: string;
-    /** The start index of the change */
-    change_start_char_idx: number;
+    /** The start index of the change (calculated from context) */
+    change_start_char_idx?: number;
     change_type?: "term_replace";
+    /** Text that appears before the original text */
+    context_before?: string;
+    /** Text that appears after the original text */
+    context_after?: string;
     category: acrolinx.TermReplaceCategory;
 }

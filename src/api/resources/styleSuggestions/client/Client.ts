@@ -15,6 +15,7 @@ export declare namespace StyleSuggestions {
         environment?: core.Supplier<environments.acrolinxEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -34,7 +35,7 @@ export declare namespace StyleSuggestions {
  * Get detailed results from style checks, including flagged issues and suggestions for how to fix them. Perfect for polishing content and staying on-brand.
  */
 export class StyleSuggestions {
-    constructor(protected readonly _options: StyleSuggestions.Options = {}) {}
+    constructor(protected readonly _options: StyleSuggestions.Options) {}
 
     /**
      * Start a style and brand suggestion run. Returns a workflow ID for each file.
@@ -81,14 +82,15 @@ export class StyleSuggestions {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 "v1/style/suggestions",
             ),
             method: "POST",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -146,6 +148,7 @@ export class StyleSuggestions {
      * @param {string} workflowId
      * @param {StyleSuggestions.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link acrolinx.NotFoundError}
      * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
@@ -166,14 +169,15 @@ export class StyleSuggestions {
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
-                    environments.acrolinxEnvironment.Default,
+                    environments.acrolinxEnvironment.Production,
                 `v1/style/suggestions/${encodeURIComponent(workflowId)}`,
             ),
             method: "GET",
             headers: {
+                Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx",
-                "X-Fern-SDK-Version": "0.0.13",
+                "X-Fern-SDK-Version": "0.0.30",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -193,6 +197,11 @@ export class StyleSuggestions {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
+                case 404:
+                    throw new acrolinx.NotFoundError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
                 default:
@@ -221,5 +230,9 @@ export class StyleSuggestions {
                     rawResponse: _response.rawResponse,
                 });
         }
+    }
+
+    protected async _getAuthorizationHeader(): Promise<string> {
+        return `Bearer ${await core.Supplier.get(this._options.token)}`;
     }
 }

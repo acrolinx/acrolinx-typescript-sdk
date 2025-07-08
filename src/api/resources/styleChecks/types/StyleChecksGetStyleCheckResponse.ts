@@ -4,4 +4,7 @@
 
 import * as acrolinx from "../../../index";
 
-export type StyleChecksGetStyleCheckResponse = acrolinx.StyleCheckResponse | acrolinx.WorkflowStatusResponse;
+export type StyleChecksGetStyleCheckResponse =
+    | acrolinx.WorkflowStatusResponse
+    | acrolinx.StyleCheckResponse
+    | acrolinx.Rfc9457Error;
