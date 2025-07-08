@@ -1,6 +1,6 @@
 {
-    "name": "acrolinx",
-    "version": "0.0.30",
+    "name": "acrolinx-nextgen-api",
+    "version": "0.0.0-beta.0",
     "private": false,
     "repository": "https://github.com/acrolinx/acrolinx-typescript-sdk",
     "main": "./index.js",
