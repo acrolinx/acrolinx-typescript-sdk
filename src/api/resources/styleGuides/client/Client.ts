@@ -38,25 +38,25 @@ export class StyleGuides {
     constructor(protected readonly _options: StyleGuides.Options) {}
 
     /**
-     * Get all style guides.
+     * Retrieve all style guides associated with your organization.
      *
-     * @param {acrolinx.StyleGuidesGetStyleGuidesRequest} request
+     * @param {acrolinx.StyleGuidesListStyleGuidesRequest} request
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
-     *     await client.styleGuides.getStyleGuides()
+     *     await client.styleGuides.listStyleGuides()
      */
-    public getStyleGuides(
-        request: acrolinx.StyleGuidesGetStyleGuidesRequest = {},
+    public listStyleGuides(
+        request: acrolinx.StyleGuidesListStyleGuidesRequest = {},
         requestOptions?: StyleGuides.RequestOptions,
     ): core.HttpResponsePromise<acrolinx.StyleGuideResponse[]> {
-        return core.HttpResponsePromise.fromPromise(this.__getStyleGuides(request, requestOptions));
+        return core.HttpResponsePromise.fromPromise(this.__listStyleGuides(request, requestOptions));
     }
 
-    private async __getStyleGuides(
-        request: acrolinx.StyleGuidesGetStyleGuidesRequest = {},
+    private async __listStyleGuides(
+        request: acrolinx.StyleGuidesListStyleGuidesRequest = {},
         requestOptions?: StyleGuides.RequestOptions,
     ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse[]>> {
         const { offset, limit } = request;
@@ -81,8 +81,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.0-beta.0",
-                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
+                "X-Fern-SDK-Version": "0.0.1",
+                "User-Agent": "acrolinx-nextgen-api/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -129,6 +129,8 @@ export class StyleGuides {
     }
 
     /**
+     * Create a new style guide that can be used in checks, suggestions, and rewrites.
+     *
      * @param {File | fs.ReadStream | Blob} file_upload
      * @param {acrolinx.StyleGuideRequestBody} request
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
@@ -171,8 +173,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.0-beta.0",
-                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
+                "X-Fern-SDK-Version": "0.0.1",
+                "User-Agent": "acrolinx-nextgen-api/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -225,22 +227,24 @@ export class StyleGuides {
     }
 
     /**
+     * Retrieve a specific style guide by ID, including its metadata such as `name` and `status`.
+     *
      * @param {string} styleGuideId - The ID of the style guide.
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
      *
      * @example
-     *     await client.styleGuides.getStyleGuide("style_guide_id")
+     *     await client.styleGuides.getStyleGuideById("style_guide_id")
      */
-    public getStyleGuide(
+    public getStyleGuideById(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
     ): core.HttpResponsePromise<acrolinx.StyleGuideResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__getStyleGuide(styleGuideId, requestOptions));
+        return core.HttpResponsePromise.fromPromise(this.__getStyleGuideById(styleGuideId, requestOptions));
     }
 
-    private async __getStyleGuide(
+    private async __getStyleGuideById(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
     ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse>> {
@@ -256,8 +260,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.0-beta.0",
-                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
+                "X-Fern-SDK-Version": "0.0.1",
+                "User-Agent": "acrolinx-nextgen-api/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -305,6 +309,8 @@ export class StyleGuides {
     }
 
     /**
+     * Delete a style guide by ID.
+     *
      * @param {string} styleGuideId - The ID of the style guide.
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
@@ -336,8 +342,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.0-beta.0",
-                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
+                "X-Fern-SDK-Version": "0.0.1",
+                "User-Agent": "acrolinx-nextgen-api/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -385,6 +391,8 @@ export class StyleGuides {
     }
 
     /**
+     * Update the name of an existing style guide.
+     *
      * @param {string} styleGuideId - The ID of the style guide.
      * @param {acrolinx.BodyStyleGuidesUpdateStyleGuide} request
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
@@ -419,8 +427,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.0-beta.0",
-                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
+                "X-Fern-SDK-Version": "0.0.1",
+                "User-Agent": "acrolinx-nextgen-api/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,

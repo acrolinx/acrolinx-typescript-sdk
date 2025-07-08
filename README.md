@@ -35,7 +35,7 @@ following namespace:
 ```typescript
 import { acrolinx } from "acrolinx-nextgen-api";
 
-const request: acrolinx.StyleGuidesGetStyleGuidesRequest = {
+const request: acrolinx.StyleGuidesListStyleGuidesRequest = {
     ...
 };
 ```

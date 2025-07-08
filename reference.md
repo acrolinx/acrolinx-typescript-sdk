@@ -2,7 +2,7 @@
 
 ## Style Guides
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuides</a>({ ...params }) -> acrolinx.StyleGuideResponse[]</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">listStyleGuides</a>({ ...params }) -> acrolinx.StyleGuideResponse[]</code></summary>
 <dl>
 <dd>
 
@@ -14,7 +14,7 @@
 <dl>
 <dd>
 
-Get all style guides.
+Retrieve all style guides associated with your organization.
 
 </dd>
 </dl>
@@ -30,7 +30,7 @@ Get all style guides.
 <dd>
 
 ```typescript
-await client.styleGuides.getStyleGuides();
+await client.styleGuides.listStyleGuides();
 ```
 
 </dd>
@@ -46,7 +46,7 @@ await client.styleGuides.getStyleGuides();
 <dl>
 <dd>
 
-**request:** `acrolinx.StyleGuidesGetStyleGuidesRequest`
+**request:** `acrolinx.StyleGuidesListStyleGuidesRequest`
 
 </dd>
 </dl>
@@ -68,6 +68,21 @@ await client.styleGuides.getStyleGuides();
 <details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">createStyleGuide</a>(file_upload, { ...params }) -> acrolinx.StyleGuideResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a new style guide that can be used in checks, suggestions, and rewrites.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -121,9 +136,24 @@ await client.styleGuides.createStyleGuide(fs.createReadStream("/path/to/your/fil
 </dl>
 </details>
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuide</a>(styleGuideId) -> acrolinx.StyleGuideResponse</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuideById</a>(styleGuideId) -> acrolinx.StyleGuideResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a specific style guide by ID, including its metadata such as `name` and `status`.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -134,7 +164,7 @@ await client.styleGuides.createStyleGuide(fs.createReadStream("/path/to/your/fil
 <dd>
 
 ```typescript
-await client.styleGuides.getStyleGuide("style_guide_id");
+await client.styleGuides.getStyleGuideById("style_guide_id");
 ```
 
 </dd>
@@ -172,6 +202,21 @@ await client.styleGuides.getStyleGuide("style_guide_id");
 <details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">deleteStyleGuide</a>(styleGuideId) -> void</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Delete a style guide by ID.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -220,6 +265,21 @@ await client.styleGuides.deleteStyleGuide("style_guide_id");
 <details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">updateStyleGuide</a>(styleGuideId, { ...params }) -> acrolinx.StyleGuideResponse</code></summary>
 <dl>
 <dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update the name of an existing style guide.
+
+</dd>
+</dl>
+</dd>
+</dl>
 
 #### 🔌 Usage
 
@@ -287,7 +347,7 @@ await client.styleGuides.updateStyleGuide("style_guide_id");
 <dl>
 <dd>
 
-Start a style and brand check run. Returns a workflow ID for each file.
+Start a style and brand check workflow. Returns a workflow ID to use for polling results.
 
 </dd>
 </dl>
@@ -303,7 +363,11 @@ Start a style and brand check run. Returns a workflow ID for each file.
 <dd>
 
 ```typescript
-await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/file"), {});
+await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/file"), {
+    dialect: "american_english",
+    tone: "academic",
+    style_guide: "style_guide",
+});
 ```
 
 </dd>
@@ -358,7 +422,7 @@ await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/fil
 <dl>
 <dd>
 
-get the results of a style and brand check run.
+Retrieve the results of a style and brand check workflow. Returns `running` or `complete` status.
 
 </dd>
 </dl>
@@ -423,7 +487,7 @@ await client.styleChecks.getStyleCheck("workflow_id");
 <dl>
 <dd>
 
-Start a style and brand suggestion run. Returns a workflow ID for each file.
+Start a style and brand suggestion workflow. Returns a workflow ID to use for polling results.
 
 </dd>
 </dl>
@@ -439,7 +503,11 @@ Start a style and brand suggestion run. Returns a workflow ID for each file.
 <dd>
 
 ```typescript
-await client.styleSuggestions.createStyleSuggestion(fs.createReadStream("/path/to/your/file"), {});
+await client.styleSuggestions.createStyleSuggestion(fs.createReadStream("/path/to/your/file"), {
+    dialect: "american_english",
+    tone: "academic",
+    style_guide: "style_guide",
+});
 ```
 
 </dd>
@@ -494,7 +562,7 @@ await client.styleSuggestions.createStyleSuggestion(fs.createReadStream("/path/t
 <dl>
 <dd>
 
-Get the results of a suggestion run.
+Retrieve the results of a style and brand suggestion workflow. Returns `running` or `complete` status.
 
 </dd>
 </dl>
@@ -559,7 +627,7 @@ await client.styleSuggestions.getStyleSuggestion("workflow_id");
 <dl>
 <dd>
 
-Start a rewrite run for one or many files. Returns a workflow ID for each file.
+Start a style and brand rewrite workflow. Returns a workflow ID to use for polling results.
 
 </dd>
 </dl>
@@ -575,7 +643,11 @@ Start a rewrite run for one or many files. Returns a workflow ID for each file.
 <dd>
 
 ```typescript
-await client.styleRewrites.createStyleRewrite(fs.createReadStream("/path/to/your/file"), {});
+await client.styleRewrites.createStyleRewrite(fs.createReadStream("/path/to/your/file"), {
+    dialect: "american_english",
+    tone: "academic",
+    style_guide: "style_guide",
+});
 ```
 
 </dd>
@@ -630,7 +702,7 @@ await client.styleRewrites.createStyleRewrite(fs.createReadStream("/path/to/your
 <dl>
 <dd>
 
-Get the results of a rewrite run.
+Retrieve the results of a rewrite workflow. Returns `running` or `complete` status.
 
 </dd>
 </dl>

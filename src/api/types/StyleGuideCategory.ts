@@ -5,15 +5,21 @@
 export type StyleGuideCategory =
     | "punctuation"
     | "capitalization"
-    | "grammar_and_usage"
-    | "numbers_and_dates"
-    | "formatting_and_structure"
+    | "spelling_and_grammar"
+    | "numbers_dates_times"
+    | "inclusive_language"
+    | "tone"
+    | "specific_conventions"
+    | "clarity_and_readability"
     | "other";
 export const StyleGuideCategory = {
     Punctuation: "punctuation",
     Capitalization: "capitalization",
-    GrammarAndUsage: "grammar_and_usage",
-    NumbersAndDates: "numbers_and_dates",
-    FormattingAndStructure: "formatting_and_structure",
+    SpellingAndGrammar: "spelling_and_grammar",
+    NumbersDatesTimes: "numbers_dates_times",
+    InclusiveLanguage: "inclusive_language",
+    Tone: "tone",
+    SpecificConventions: "specific_conventions",
+    ClarityAndReadability: "clarity_and_readability",
     Other: "other",
 } as const;

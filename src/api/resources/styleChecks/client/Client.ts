@@ -38,7 +38,7 @@ export class StyleChecks {
     constructor(protected readonly _options: StyleChecks.Options) {}
 
     /**
-     * Start a style and brand check run. Returns a workflow ID for each file.
+     * Start a style and brand check workflow. Returns a workflow ID to use for polling results.
      *
      * @param {File | fs.ReadStream | Blob} file_upload
      * @param {acrolinx.StyleChecksCreateStyleCheckRequest} request
@@ -48,7 +48,11 @@ export class StyleChecks {
      * @throws {@link acrolinx.InternalServerError}
      *
      * @example
-     *     await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/file"), {})
+     *     await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/file"), {
+     *         dialect: "american_english",
+     *         tone: "academic",
+     *         style_guide: "style_guide"
+     *     })
      */
     public createStyleCheck(
         file_upload: File | fs.ReadStream | Blob,
@@ -65,18 +69,9 @@ export class StyleChecks {
     ): Promise<core.WithRawResponse<acrolinx.WorkflowResponse>> {
         const _request = await core.newFormData();
         await _request.appendFile("file_upload", file_upload);
-        if (request.dialect != null) {
-            _request.append("dialect", request.dialect);
-        }
-
-        if (request.tone != null) {
-            _request.append("tone", request.tone);
-        }
-
-        if (request.style_guide != null) {
-            _request.append("style_guide", request.style_guide);
-        }
-
+        _request.append("dialect", request.dialect);
+        _request.append("tone", request.tone);
+        _request.append("style_guide", request.style_guide);
         const _maybeEncodedRequest = await _request.getRequest();
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
@@ -90,8 +85,8 @@ export class StyleChecks {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.0-beta.0",
-                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
+                "X-Fern-SDK-Version": "0.0.1",
+                "User-Agent": "acrolinx-nextgen-api/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -144,7 +139,7 @@ export class StyleChecks {
     }
 
     /**
-     * get the results of a style and brand check run.
+     * Retrieve the results of a style and brand check workflow. Returns `running` or `complete` status.
      *
      * @param {string} workflowId
      * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
@@ -178,8 +173,8 @@ export class StyleChecks {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.0-beta.0",
-                "User-Agent": "acrolinx-nextgen-api/0.0.0-beta.0",
+                "X-Fern-SDK-Version": "0.0.1",
+                "User-Agent": "acrolinx-nextgen-api/0.0.1",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
