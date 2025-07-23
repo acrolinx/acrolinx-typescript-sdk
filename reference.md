@@ -2,7 +2,7 @@
 
 ## Style Guides
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">listStyleGuides</a>({ ...params }) -> acrolinx.StyleGuideResponse[]</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">listStyleGuides</a>() -> acrolinx.StyleGuideResponse[]</code></summary>
 <dl>
 <dd>
 
@@ -42,14 +42,6 @@ await client.styleGuides.listStyleGuides();
 
 <dl>
 <dd>
-
-<dl>
-<dd>
-
-**request:** `acrolinx.StyleGuidesListStyleGuidesRequest`
-
-</dd>
-</dl>
 
 <dl>
 <dd>
@@ -136,7 +128,7 @@ await client.styleGuides.createStyleGuide(fs.createReadStream("/path/to/your/fil
 </dl>
 </details>
 
-<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuideById</a>(styleGuideId) -> acrolinx.StyleGuideResponse</code></summary>
+<details><summary><code>client.styleGuides.<a href="/src/api/resources/styleGuides/client/Client.ts">getStyleGuide</a>(styleGuideId) -> acrolinx.StyleGuideResponse</code></summary>
 <dl>
 <dd>
 
@@ -164,7 +156,7 @@ Retrieve a specific style guide by ID, including its metadata such as `name` and
 <dd>
 
 ```typescript
-await client.styleGuides.getStyleGuideById("style_guide_id");
+await client.styleGuides.getStyleGuide("style_guide_id");
 ```
 
 </dd>
@@ -290,7 +282,9 @@ Update the name of an existing style guide.
 <dd>
 
 ```typescript
-await client.styleGuides.updateStyleGuide("style_guide_id");
+await client.styleGuides.updateStyleGuide("style_guide_id", {
+    name: "name",
+});
 ```
 
 </dd>
@@ -410,7 +404,7 @@ await client.styleChecks.createStyleCheck(fs.createReadStream("/path/to/your/fil
 </dl>
 </details>
 
-<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">getStyleCheck</a>(workflowId) -> acrolinx.StyleChecksGetStyleCheckResponse</code></summary>
+<details><summary><code>client.styleChecks.<a href="/src/api/resources/styleChecks/client/Client.ts">getStyleCheck</a>(workflowId) -> acrolinx.StyleCheckResponse</code></summary>
 <dl>
 <dd>
 
@@ -550,7 +544,7 @@ await client.styleSuggestions.createStyleSuggestion(fs.createReadStream("/path/t
 </dl>
 </details>
 
-<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">getStyleSuggestion</a>(workflowId) -> acrolinx.StyleSuggestionsGetStyleSuggestionResponse</code></summary>
+<details><summary><code>client.styleSuggestions.<a href="/src/api/resources/styleSuggestions/client/Client.ts">getStyleSuggestion</a>(workflowId) -> acrolinx.SuggestionResponse</code></summary>
 <dl>
 <dd>
 
@@ -690,7 +684,7 @@ await client.styleRewrites.createStyleRewrite(fs.createReadStream("/path/to/your
 </dl>
 </details>
 
-<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId) -> acrolinx.StyleRewritesGetStyleRewriteResponse</code></summary>
+<details><summary><code>client.styleRewrites.<a href="/src/api/resources/styleRewrites/client/Client.ts">getStyleRewrite</a>(workflowId) -> acrolinx.StyleCheckResponse</code></summary>
 <dl>
 <dd>
 

@@ -17,6 +17,6 @@ export interface StyleChecksCreateStyleCheckRequest {
     dialect: acrolinx.Dialects;
     /** The tone variation you're aiming for. Options include formal, academic, casual, and other tone variations to match your content goals. */
     tone: acrolinx.Tones;
-    /** The style guide to follow for your content. You can use a custom style guide ID or choose from built-in options like AP, Chicago, or Microsoft style guides. */
+    /** The style guide to follow for your content. You can use a style guide ID or choose from built-in options: `ap`, `chicago`, or `microsoft`. */
     style_guide: string;
 }

@@ -4,9 +4,11 @@
 
 /**
  * @example
- *     {}
+ *     {
+ *         name: "name"
+ *     }
  */
 export interface BodyStyleGuidesUpdateStyleGuide {
     /** The name of the style guide. */
-    name?: string;
+    name: string;
 }

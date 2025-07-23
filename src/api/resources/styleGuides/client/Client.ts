@@ -40,35 +40,23 @@ export class StyleGuides {
     /**
      * Retrieve all style guides associated with your organization.
      *
-     * @param {acrolinx.StyleGuidesListStyleGuidesRequest} request
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
      *     await client.styleGuides.listStyleGuides()
      */
     public listStyleGuides(
-        request: acrolinx.StyleGuidesListStyleGuidesRequest = {},
         requestOptions?: StyleGuides.RequestOptions,
     ): core.HttpResponsePromise<acrolinx.StyleGuideResponse[]> {
-        return core.HttpResponsePromise.fromPromise(this.__listStyleGuides(request, requestOptions));
+        return core.HttpResponsePromise.fromPromise(this.__listStyleGuides(requestOptions));
     }
 
     private async __listStyleGuides(
-        request: acrolinx.StyleGuidesListStyleGuidesRequest = {},
         requestOptions?: StyleGuides.RequestOptions,
     ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse[]>> {
-        const { offset, limit } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (offset != null) {
-            _queryParams["offset"] = offset.toString();
-        }
-
-        if (limit != null) {
-            _queryParams["limit"] = limit.toString();
-        }
-
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -81,14 +69,13 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx-nextgen-api/0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
+                "User-Agent": "acrolinx-nextgen-api/0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
-            queryParameters: _queryParams,
             requestType: "json",
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
@@ -102,6 +89,11 @@ export class StyleGuides {
             switch (_response.error.statusCode) {
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 default:
                     throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
@@ -173,8 +165,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx-nextgen-api/0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
+                "User-Agent": "acrolinx-nextgen-api/0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -233,18 +225,19 @@ export class StyleGuides {
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
-     *     await client.styleGuides.getStyleGuideById("style_guide_id")
+     *     await client.styleGuides.getStyleGuide("style_guide_id")
      */
-    public getStyleGuideById(
+    public getStyleGuide(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
     ): core.HttpResponsePromise<acrolinx.StyleGuideResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__getStyleGuideById(styleGuideId, requestOptions));
+        return core.HttpResponsePromise.fromPromise(this.__getStyleGuide(styleGuideId, requestOptions));
     }
 
-    private async __getStyleGuideById(
+    private async __getStyleGuide(
         styleGuideId: string,
         requestOptions?: StyleGuides.RequestOptions,
     ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse>> {
@@ -260,8 +253,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx-nextgen-api/0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
+                "User-Agent": "acrolinx-nextgen-api/0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -280,6 +273,11 @@ export class StyleGuides {
             switch (_response.error.statusCode) {
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 default:
                     throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
@@ -315,6 +313,7 @@ export class StyleGuides {
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
      *     await client.styleGuides.deleteStyleGuide("style_guide_id")
@@ -342,8 +341,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx-nextgen-api/0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
+                "User-Agent": "acrolinx-nextgen-api/0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -362,6 +361,11 @@ export class StyleGuides {
             switch (_response.error.statusCode) {
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 default:
                     throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,
@@ -397,14 +401,18 @@ export class StyleGuides {
      * @param {acrolinx.BodyStyleGuidesUpdateStyleGuide} request
      * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link acrolinx.ForbiddenError}
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
-     *     await client.styleGuides.updateStyleGuide("style_guide_id")
+     *     await client.styleGuides.updateStyleGuide("style_guide_id", {
+     *         name: "name"
+     *     })
      */
     public updateStyleGuide(
         styleGuideId: string,
-        request: acrolinx.BodyStyleGuidesUpdateStyleGuide = {},
+        request: acrolinx.BodyStyleGuidesUpdateStyleGuide,
         requestOptions?: StyleGuides.RequestOptions,
     ): core.HttpResponsePromise<acrolinx.StyleGuideResponse> {
         return core.HttpResponsePromise.fromPromise(this.__updateStyleGuide(styleGuideId, request, requestOptions));
@@ -412,7 +420,7 @@ export class StyleGuides {
 
     private async __updateStyleGuide(
         styleGuideId: string,
-        request: acrolinx.BodyStyleGuidesUpdateStyleGuide = {},
+        request: acrolinx.BodyStyleGuidesUpdateStyleGuide,
         requestOptions?: StyleGuides.RequestOptions,
     ): Promise<core.WithRawResponse<acrolinx.StyleGuideResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
@@ -427,8 +435,8 @@ export class StyleGuides {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx-nextgen-api/0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
+                "User-Agent": "acrolinx-nextgen-api/0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -446,8 +454,18 @@ export class StyleGuides {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
+                case 403:
+                    throw new acrolinx.ForbiddenError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 default:
                     throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,

@@ -44,6 +44,7 @@ export class StyleRewrites {
      * @param {acrolinx.StyleRewritesCreateStyleRewriteRequest} request
      * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link acrolinx.ContentTooLargeError}
      * @throws {@link acrolinx.UnprocessableEntityError}
      * @throws {@link acrolinx.InternalServerError}
      *
@@ -85,8 +86,8 @@ export class StyleRewrites {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx-nextgen-api/0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
+                "User-Agent": "acrolinx-nextgen-api/0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -105,6 +106,8 @@ export class StyleRewrites {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
+                case 413:
+                    throw new acrolinx.ContentTooLargeError(_response.error.body as unknown, _response.rawResponse);
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
                 case 500:
@@ -146,6 +149,7 @@ export class StyleRewrites {
      *
      * @throws {@link acrolinx.NotFoundError}
      * @throws {@link acrolinx.UnprocessableEntityError}
+     * @throws {@link acrolinx.InternalServerError}
      *
      * @example
      *     await client.styleRewrites.getStyleRewrite("workflow_id")
@@ -153,14 +157,14 @@ export class StyleRewrites {
     public getStyleRewrite(
         workflowId: string,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): core.HttpResponsePromise<acrolinx.StyleRewritesGetStyleRewriteResponse> {
+    ): core.HttpResponsePromise<acrolinx.StyleCheckResponse> {
         return core.HttpResponsePromise.fromPromise(this.__getStyleRewrite(workflowId, requestOptions));
     }
 
     private async __getStyleRewrite(
         workflowId: string,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): Promise<core.WithRawResponse<acrolinx.StyleRewritesGetStyleRewriteResponse>> {
+    ): Promise<core.WithRawResponse<acrolinx.StyleCheckResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -173,8 +177,8 @@ export class StyleRewrites {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.1",
-                "User-Agent": "acrolinx-nextgen-api/0.0.1",
+                "X-Fern-SDK-Version": "0.0.2",
+                "User-Agent": "acrolinx-nextgen-api/0.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -186,10 +190,7 @@ export class StyleRewrites {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return {
-                data: _response.body as acrolinx.StyleRewritesGetStyleRewriteResponse,
-                rawResponse: _response.rawResponse,
-            };
+            return { data: _response.body as acrolinx.StyleCheckResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
@@ -201,6 +202,11 @@ export class StyleRewrites {
                     );
                 case 422:
                     throw new acrolinx.UnprocessableEntityError(_response.error.body as unknown, _response.rawResponse);
+                case 500:
+                    throw new acrolinx.InternalServerError(
+                        _response.error.body as acrolinx.ErrorResponse,
+                        _response.rawResponse,
+                    );
                 default:
                     throw new errors.acrolinxError({
                         statusCode: _response.error.statusCode,

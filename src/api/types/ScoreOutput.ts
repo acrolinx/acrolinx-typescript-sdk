@@ -5,10 +5,10 @@
 import * as acrolinx from "../index";
 
 export interface ScoreOutput {
-    quality: acrolinx.QualityScore;
-    clarity: acrolinx.ClarityScore;
-    grammar: acrolinx.GrammarScore;
-    style_guide: acrolinx.StyleGuideScore;
-    tone: acrolinx.ToneScore;
-    terminology: acrolinx.TerminologyScore;
+    quality?: acrolinx.QualityScore;
+    clarity?: acrolinx.ClarityScore;
+    grammar?: acrolinx.GrammarScore;
+    style_guide?: acrolinx.StyleGuideScore;
+    tone?: acrolinx.ToneScore;
+    terminology?: acrolinx.TerminologyScore;
 }

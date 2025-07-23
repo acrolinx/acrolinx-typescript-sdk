@@ -10,12 +10,12 @@ export interface StyleGuideResponse {
     name: string;
     /** The UTC date and time the style guide was created. */
     created_at: string;
-    /** The user who created the style guide. */
+    /** The ID of the user who created the style guide. */
     created_by: string;
     /** The status of the submitted style guide. */
     status: acrolinx.StyleGuideStatus;
     /** The UTC datetime that the style guide was last updated. If null, the style guide has never been updated. */
     updated_at?: string;
-    /** The user who last updated the style guide. If null, the style guide has never been updated. */
+    /** The ID of the user who last updated the style guide. If null, the style guide has never been updated. */
     updated_by?: string;
 }
