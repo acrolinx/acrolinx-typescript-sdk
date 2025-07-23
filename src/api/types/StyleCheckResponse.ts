@@ -5,8 +5,8 @@
 import * as acrolinx from "../index";
 
 export interface StyleCheckResponse {
-    status: acrolinx.StyleGuideStatus;
+    status?: acrolinx.StyleGuideStatus;
     scores?: acrolinx.ScoreOutput;
-    issues: acrolinx.Issue[];
-    check_options: acrolinx.CheckOptions;
+    issues?: acrolinx.Issue[];
+    check_options?: acrolinx.CheckOptions;
 }
