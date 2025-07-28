@@ -86,8 +86,8 @@ export class StyleRewrites {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.2",
-                "User-Agent": "acrolinx-nextgen-api/0.0.2",
+                "X-Fern-SDK-Version": "0.0.3",
+                "User-Agent": "acrolinx-nextgen-api/0.0.3",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -157,14 +157,14 @@ export class StyleRewrites {
     public getStyleRewrite(
         workflowId: string,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): core.HttpResponsePromise<acrolinx.StyleCheckResponse> {
+    ): core.HttpResponsePromise<acrolinx.RewriteResponse> {
         return core.HttpResponsePromise.fromPromise(this.__getStyleRewrite(workflowId, requestOptions));
     }
 
     private async __getStyleRewrite(
         workflowId: string,
         requestOptions?: StyleRewrites.RequestOptions,
-    ): Promise<core.WithRawResponse<acrolinx.StyleCheckResponse>> {
+    ): Promise<core.WithRawResponse<acrolinx.RewriteResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
@@ -177,8 +177,8 @@ export class StyleRewrites {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.2",
-                "User-Agent": "acrolinx-nextgen-api/0.0.2",
+                "X-Fern-SDK-Version": "0.0.3",
+                "User-Agent": "acrolinx-nextgen-api/0.0.3",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -190,7 +190,7 @@ export class StyleRewrites {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return { data: _response.body as acrolinx.StyleCheckResponse, rawResponse: _response.rawResponse };
+            return { data: _response.body as acrolinx.RewriteResponse, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
