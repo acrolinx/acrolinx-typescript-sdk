@@ -27,5 +27,6 @@ export * from "./TerminologyScore";
 export * from "./ToneCategory";
 export * from "./ToneScore";
 export * from "./Tones";
+export * from "./WebhookResponse";
 export * from "./WorkflowResponse";
 export * from "./WorkflowStatus";
