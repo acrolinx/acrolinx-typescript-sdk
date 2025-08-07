@@ -73,6 +73,10 @@ export class StyleSuggestions {
         _request.append("dialect", request.dialect);
         _request.append("tone", request.tone);
         _request.append("style_guide", request.style_guide);
+        if (request.webhook_url != null) {
+            _request.append("webhook_url", request.webhook_url);
+        }
+
         const _maybeEncodedRequest = await _request.getRequest();
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
@@ -86,8 +90,8 @@ export class StyleSuggestions {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.3",
-                "User-Agent": "acrolinx-nextgen-api/0.0.3",
+                "X-Fern-SDK-Version": "0.0.4",
+                "User-Agent": "acrolinx-nextgen-api/0.0.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ..._maybeEncodedRequest.headers,
@@ -177,8 +181,8 @@ export class StyleSuggestions {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "acrolinx-nextgen-api",
-                "X-Fern-SDK-Version": "0.0.3",
-                "User-Agent": "acrolinx-nextgen-api/0.0.3",
+                "X-Fern-SDK-Version": "0.0.4",
+                "User-Agent": "acrolinx-nextgen-api/0.0.4",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,

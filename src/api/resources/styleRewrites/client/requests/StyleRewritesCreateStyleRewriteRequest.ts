@@ -19,4 +19,6 @@ export interface StyleRewritesCreateStyleRewriteRequest {
     tone: acrolinx.Tones;
     /** The style guide to follow for your content. You can use a style guide ID or choose from built-in options: `ap`, `chicago`, or `microsoft`. */
     style_guide: string;
+    /** A URL that results will be POSTed to once the process completes. */
+    webhook_url?: string;
 }

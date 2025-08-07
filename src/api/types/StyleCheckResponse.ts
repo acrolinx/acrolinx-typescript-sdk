@@ -5,8 +5,11 @@
 import * as acrolinx from "../index";
 
 export interface StyleCheckResponse {
-    status?: acrolinx.StyleGuideStatus;
+    workflow_id?: string;
+    status?: acrolinx.WorkflowStatus;
     scores?: acrolinx.ScoreOutput;
     issues?: acrolinx.Issue[];
     check_options?: acrolinx.CheckOptions;
+    /** The status code received and URL used when sending the webhook if a webhook URL was included when starting the process. */
+    webhook_response?: acrolinx.WebhookResponse;
 }
